@@ -51,6 +51,7 @@
     "dist"
   ],
   "dependencies": {
-    "d3": "6.5.0"
+    "d3": "6.5.0",
+    "d3-selection-multi": "1.0.1"
   }
 }

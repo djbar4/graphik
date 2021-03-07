@@ -2,10 +2,7 @@
   "parser": "babel-eslint",
   "extends": [
     "standard",
-    "standard-react",
-    "plugin:prettier/recommended",
-    "prettier/standard",
-    "prettier/react"
+    "standard-react"
   ],
   "env": {
     "node": true
@@ -28,6 +25,8 @@
     "react/jsx-handler-names": 0,
     "react/jsx-fragments": 0,
     "react/no-unused-prop-types": 0,
-    "import/export": 0
+    "import/export": 0,
+    "newline-per-chained-call": 1,
+    "semi": [1, "always"]
   }
 }

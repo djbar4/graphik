@@ -1,10 +1,41 @@
 import React from 'react'
 
-import { Example } from 'graphik'
+import { Graph } from 'graphik';
+
 import 'graphik/dist/index.css'
 
+const nodeData = [
+  {
+      id: 'FOO',
+      name: 'Test 1',
+      location: 'Africa',
+      x: 130,
+      y: 40,
+  },
+  {
+      id: 'BAR',
+      name: 'Test 2',
+      location: 'Europe',
+      x: 20,
+      y: 40,
+  }
+]; 
+
+const edgeData = [
+  {
+    source: 'FOO',
+    target: 'BAR',
+    weight: 50
+  }
+];
+
+const data = {
+  nodes: nodeData,
+  edges: edgeData
+}
+
 const App = () => {
-  return <Example text="Create React Library Example 😄" />
+  return <Graph data={data}/>
 }
 
 export default App
