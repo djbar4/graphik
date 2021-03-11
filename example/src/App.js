@@ -9,7 +9,8 @@ const nodeData = [
       id: 'FOO',
       name: 'Test 1',
       location: 'Africa',
-      x: 130,
+      fill: '#cc6133',
+      x: 60,
       y: 40,
   },
   {

@@ -1,34 +1,41 @@
 import * as d3 from 'd3';
+import styles from '../styles.module.css';
 
 const D3Edge = {};
 
 D3Edge.create = (data) => {
-  const nodesGroup = d3.select('svg').select('g.nodes');
-  console.log('hy');
-  nodesGroup.selectAll('path')
+  // const nodesGroup = d3.select('svg')
+  //   .select('g.nodes')
+  //   .selectAll('path')
+  //   .data(data)
+  //   .join('path');
+
+  const nodesGroup = d3.select('svg')
+    .append('g')
+    .attr('edges', true)
+    .selectAll('line')
     .data(data)
-    .enter()
-    .append('path')
+    .join('line');
+
+  nodesGroup
     .attrs({
-      class: 'arc',
+      class: styles.line,
       fill: 'none',
       stroke: 'black',
       'stroke-width': 2,
-      oppacity: 0.25,
-      d: someFunc
+      oppacity: 0
+      // d: someFunc
     });
+
+  return nodesGroup;
 };
 
 const someFunc = (d, i) => {
   console.log(d);
   var draw = d3.line().curve(d3.curveBasis);
   var midX = (d.source.x + d.target.x) / 2;
-  var midY = (d.source.x - d.target.x);
-  console.log(`source x: ${d.source.x}`);
-  console.log(`target x: ${d.target.x}`);
-  console.log(`midX: ${midX}`);
-  console.log(`midY: ${midY}`);
-  // return draw([100, 50], [200, 60], [300, 70]);
+  // var midY = (d.source.x - d.target.x);
+
   return draw([[d.source.x + 15, 40], [midX + 15, 0], [d.target.x + 15, 40]]);
 };
 

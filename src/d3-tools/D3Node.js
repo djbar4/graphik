@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import drag from './D3NodeDrag';
+import drag from './node-drag';
 import { addDefaultNodeAttributes } from './node-attributes';
 
 const D3Node = {};
@@ -16,7 +16,12 @@ D3Node.create = (data) => {
 
   rects.call(d3.drag().on('start', drag.dragStarted)
     .on('drag', drag.dragged)
-    .on('end', drag.dragEnded));
+    .on('end', drag.dragEnded)
+    .container(d3.select('svg.canvas')));
+
+  console.log('meh');
+  console.log(rects);
+  return rects;
 };
 
 export default D3Node;
