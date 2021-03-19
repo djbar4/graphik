@@ -15,8 +15,6 @@ const linkGen = d3.linkVertical();
 class Graph extends Component {
   constructor(props) {
     super(props);
-    // this.nodes = this.props.nodes;
-    // this.edges = this.props.edges;
     this.containerRefs = React.createRef();
 
     this.forceTick = this.forceTick.bind(this);
@@ -29,16 +27,6 @@ class Graph extends Component {
     this.renderLinks();
     this.renderNodes();
     this.setSimulation();
-  }
-
-  componentDidUpdate() {
-    console.log('UPDATING');
-    this.calculateLinks();
-    this.renderLinks();
-    this.renderNodes();
-
-    // simulation.nodes(this.categories).alpha(0.1)
-    //   .restart();
   }
 
   setSimulation() {
@@ -81,7 +69,6 @@ class Graph extends Component {
     this.nodes.call(d3.drag().on('start', this.dragStarted)
       .on('drag', this.dragged)
       .on('end', this.dragEnded));
-    //   .merge(this.nodes);
   }
 
   forceTick() {
@@ -95,7 +82,6 @@ class Graph extends Component {
   }
 
   dragStarted () {
-    console.log(this);
     d3.select(this).attr('stroke', 'red');
   }
 
