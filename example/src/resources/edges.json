@@ -1,0 +1,7 @@
+[
+    {
+       "source":"FOO",
+       "target":"BAR",
+       "weight":50
+    }
+]

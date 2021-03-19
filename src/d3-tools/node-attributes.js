@@ -7,10 +7,10 @@ function addDefaultNodeAttributes(el) {
     rx: '10',
     fill: d => d.fill ? d.fill : '#6fa6de',
     stroke: 'black'
-  });
-  // .attrs(
-  //   (d, i) => d
-  // );
+  })
+    .attrs(
+      (d, i) => d
+    );
 }
 
 export { addDefaultNodeAttributes };

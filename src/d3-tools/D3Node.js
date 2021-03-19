@@ -1,27 +1,46 @@
 import * as d3 from 'd3';
 import drag from './node-drag';
 import { addDefaultNodeAttributes } from './node-attributes';
+import React, { Component } from 'react';
 
-const D3Node = {};
+class Nodes extends Component {
+  constructor(props) {
+    super(props);
+    this.nodes = this.props.nodes;
+    this.containerRefs = React.createRef();
+  }
 
-D3Node.create = (data) => {
-  const rects = d3.select('svg.canvas')
-    .append('g')
-    .attr('class', 'nodes')
-    .selectAll('g')
-    .data(data)
-    .join('rect');
+  componentDidMount() {
+    this.container = d3.select(this.containerRefs.current).append('g');
+    this.props.simulation.nodes(this.props.nodes).restart();
+    this.renderNodes();
+  }
 
-  addDefaultNodeAttributes(rects);
+  renderNodes() {
+    this.nodes = this.container.selectAll('.node')
+      .data(this.nodes, d => d.id)
+      .join('rect');
 
-  rects.call(d3.drag().on('start', drag.dragStarted)
-    .on('drag', drag.dragged)
-    .on('end', drag.dragEnded)
-    .container(d3.select('svg.canvas')));
+    addDefaultNodeAttributes(this.nodes);
 
-  console.log('meh');
-  console.log(rects);
-  return rects;
-};
+    this.nodes.call(d3.drag().on('start', drag.dragStarted)
+      .on('drag', drag.dragged)
+      .on('end', drag.dragEnded))
+      .merge(this.nodes);
+  }
 
-export default D3Node;
+  forceTick() {
+    this.nodes.attrs({
+      x: d => d.x,
+      y: d => d.y
+    });
+  }
+
+  render() {
+    return (
+      <g className='nodes' ref={this.containerRefs} />
+    );
+  }
+}
+
+export default Nodes;

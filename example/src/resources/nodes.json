@@ -1,0 +1,17 @@
+[
+    {
+       "id":"FOO",
+       "name":"Test 1",
+       "location":"Africa",
+       "fill":"#cc6133",
+       "x":60,
+       "y":40
+    },
+    {
+       "id":"BAR",
+       "name":"Test 2",
+       "location":"Europe",
+       "x":20,
+       "y":80
+    }
+ ]

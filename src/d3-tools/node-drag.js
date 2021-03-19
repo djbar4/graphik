@@ -1,17 +1,23 @@
 import * as d3 from 'd3';
+function dragStarted (simulation, dat) {
+  console.log(this);
 
-function dragStarted () {
   d3.select(this).attr('stroke', 'red');
 }
 
-function dragged (event, d) {
-  d3.select(this).raise()
+function dragged (event, d, r) {
+  // simulation.restart();
+  console.log(r);
+
+  d3.select(r).raise()
     .attr('x', d.x = event.x)
     .attr('y', d.y = event.y);
 }
 
-function dragEnded() {
-  d3.select(this).attr('stroke', 'black');
+function dragEnded(r) {
+  // simulation.stop();
+
+  d3.select(r).attr('stroke', 'black');
 }
 
 export default {
