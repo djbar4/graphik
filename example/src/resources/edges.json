@@ -3,5 +3,30 @@
        "source":"FOO",
        "target":"BAR",
        "weight":50
-    }
+    },
+    {
+        "source":"FOO",
+        "target":"CHARLIE",
+        "weight":50
+     },
+     {
+        "source":"CHARLIE",
+        "target":"DELTA",
+        "weight":50
+     },
+     {
+        "source":"DELTA",
+        "target":"VRA",
+        "weight":50
+     },
+     {
+        "source":"ASF",
+        "target":"VRA",
+        "weight":50
+     },
+     {
+        "source":"ECH",
+        "target":"BAR",
+        "weight":50
+     }
 ]

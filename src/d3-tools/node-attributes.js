@@ -1,16 +1,15 @@
-function addDefaultNodeAttributes(el) {
+function addDefaultNodeAttributes(el, props) {
   el.attrs({
-    height: 30,
-    width: 30,
-    // x: (d, i) => (i + 1) * 100,
-    // y: 40,
+    id: d => d.id,
+    height: props.nodeWidth,
+    width: props.nodeHeight,
     rx: '10',
     fill: d => d.fill ? d.fill : '#6fa6de',
-    stroke: 'black'
-  })
-    .attrs(
-      (d, i) => d
-    );
+    class: 'node',
+    stroke: 'black',
+    x: props.x ? props.x : 100,
+    y: props.y ? props.y : 100
+  });
 }
 
 export { addDefaultNodeAttributes };

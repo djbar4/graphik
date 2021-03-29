@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import Graph from './d3-tools/Graph';
 
-const canvasWidth = 500;
-const canvasHeight = 500;
+const canvasWidth = '100%';
+const canvasHeight = '500';
 
-// const nodeWidth = 20;
-// const nodeHeight = 20;
+const nodeWidth = 50;
+const nodeHeight = 50;
+
+// Add a save button.
 
 export class Graphik extends Component {
   constructor(props) {
@@ -15,7 +17,9 @@ export class Graphik extends Component {
 
     this.state = {
       nodes: props.data.nodes,
-      edges: props.data.edges
+      edges: props.data.edges,
+      nodeWidth,
+      nodeHeight
     };
   }
 
@@ -32,9 +36,13 @@ export class Graphik extends Component {
 
   render() {
     return (
-      <svg className='canvas' width={canvasWidth} height={canvasHeight}>
-        <Graph {...this.state} />
-      </svg>
+      <div id='svgContainer'>
+        <div id='tooltip' />
+        <svg className='canvas' width={canvasWidth} height={canvasHeight}>
+          <rect width='100%' height='100%' fill='#284678' />
+          <Graph {...this.state} />
+        </svg>
+      </div>
     );
   }
 }

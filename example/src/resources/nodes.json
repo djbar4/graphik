@@ -4,14 +4,49 @@
        "name":"Test 1",
        "location":"Africa",
        "fill":"#cc6133",
-       "x":60,
+       "x":230,
        "y":40
     },
     {
        "id":"BAR",
        "name":"Test 2",
        "location":"Europe",
-       "x":20,
+       "x":100,
        "y":80
-    }
+    },
+    {
+      "id":"CHARLIE",
+      "name":"Test 3",
+      "location":"Europe",
+      "x":450,
+      "y":80
+   },
+   {
+      "id":"DELTA",
+      "name":"Test 4",
+      "location":"Europe",
+      "x":360,
+      "y":140
+   },
+   {
+      "id":"ECH",
+      "name":"Test 5",
+      "location":"Europe",
+      "x":100,
+      "y":140
+   },
+   {
+      "id":"VRA",
+      "name":"Test 6",
+      "location":"Europe",
+      "x":230,
+      "y":180
+   },
+   {
+      "id":"ASF",
+      "name":"Test 9",
+      "location":"Europe",
+      "x":450,
+      "y":180
+   }
  ]
