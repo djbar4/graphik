@@ -1,6 +1,5 @@
 import * as d3 from 'd3';
 import styles from '../styles.module.css';
-// import React from 'react';
 
 let tooltipDiv;
 let prevNode;
@@ -53,8 +52,8 @@ function createHtml(data) {
 function createAttributesHtml(data) {
   let attrsHtml = '';
   for (const k in data) {
-    if (!(k === 'vy' || k === 'vx' || k === 'index')) {
-      attrsHtml += `<p>${k}:${data[k]}</p>`;
+    if (!(k === 'vy' || k === 'vx' || k === 'index' || k === 'y' || k === 'x')) {
+      attrsHtml += `<p><label>${k}:</label><input type="text" value=${data[k]}></input></p>`;
     }
   }
   return attrsHtml;

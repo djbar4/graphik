@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Graph from './d3-tools/Graph';
+import styles from './styles.module.css';
 
 const canvasWidth = '100%';
 const canvasHeight = '500';
@@ -15,34 +16,42 @@ export class Graphik extends Component {
 
     this.mapNodesToEdges();
     this.saveGraph = this.saveGraph.bind(this);
-    console.log('🚀 ~ propssss', props);
-
+    this.removeNode = this.removeNode.bind(this);
     this.state = {
       nodes: props.data.nodes,
       edges: props.data.edges,
       nodeWidth,
-      nodeHeight
+      nodeHeight,
+      removeNode: this.removeNode
     };
   }
 
   saveGraph() {
     console.log('Saving Graph');
-    this.makeDataSavable();
-    this.props.externalSaveGraph(this.props.data);
+    console.log(this.state.edges);
+    const formattedData = this.generatedFormattedSavedData();
+    this.props.externalSaveGraph(formattedData);
   }
 
-  makeDataSavable() {
-    this.props.data.edges.forEach(edge => {
+  generatedFormattedSavedData() {
+    const data = {
+      nodes: JSON.parse(JSON.stringify(this.state.nodes)),
+      edges: JSON.parse(JSON.stringify(this.state.edges))
+    };
+
+    data.edges.forEach(edge => {
       edge.source = edge.source.id;
       edge.target = edge.target.id;
       delete edge.index;
     });
 
-    this.props.data.nodes.forEach(node => {
+    data.nodes.forEach(node => {
       delete node.vx;
       delete node.vy;
       delete node.index;
     });
+
+    return data;
   }
 
   mapNodesToEdges() {
@@ -56,10 +65,25 @@ export class Graphik extends Component {
     });
   }
 
+  removeNode(d, e) {
+    const tempNodes = this.state.nodes.filter(node => {
+      return node.id !== d.id;
+    });
+    const tempEdges = this.state.edges.filter(edge => {
+      return (edge.source.id !== d.id && edge.target.id !== d.id);
+    });
+
+    this.setState({
+      nodes: tempNodes,
+      edges: tempEdges
+    });
+    this.forceUpdate();
+  }
+
   render() {
     return (
-      <div id='svgContainer'>
-        <button onClick={this.saveGraph}>
+      <div id='svgContainer' className={styles.svgContainer}>
+        <button onClick={this.saveGraph} className={styles.button}>
           Save
         </button>
         <div id='tooltip' />

@@ -5,6 +5,7 @@ import 'graphik/dist/index.css'
 // import nodeData from './resources/nodes.json';
 // import edgeData from './resources/edges.json';
 import data from './resources/savedData.json';
+// import data from './resources/savedDataRemovedNode.json';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -20,6 +21,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100vh',
+    fontFamily: 'monospace'
   },
   main: {
     marginTop: theme.spacing(8),
@@ -48,20 +50,20 @@ const App = () => {
   const classes = useStyles();
 
   return (
-  <div className={classes.root}>
-  <CssBaseline />
-  <Container component="main" className={classes.main}>
-    <Typography id='title' variant="h2" component="h1" gutterBottom>
-      Graphik
-    </Typography>
-    <Graphik data={data} externalSaveGraph={saveData} />
-  </Container>
-  <footer className={classes.footer}>
-    <Container maxWidth="sm">
-      <Typography variant="body1">My sticky footer can be found here.</Typography>
-    </Container>
-  </footer>
-</div>
+    <div className={classes.root}>
+      <CssBaseline />
+      <Container component="main" className={classes.main}>
+        <Typography id='title' variant="h2" component="h1" gutterBottom>
+          Graphik
+        </Typography>
+        <Graphik data={data} externalSaveGraph={saveData} />
+      </Container>
+      <footer className={classes.footer}>
+        <Container maxWidth="sm">
+          <Typography variant="body1">My sticky footer can be found here.</Typography>
+        </Container>
+      </footer>
+    </div>
   )
 
 }

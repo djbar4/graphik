@@ -5,6 +5,7 @@ import { addDefaultNodeAttributes } from './node-attributes';
 
 import tooltipFuncs from './tooltip';
 import dragFuncs from './node-drag';
+import d3ContextMenu from 'd3-context-menu';
 
 const simulation = d3.forceSimulation().alpha(0);
 const linkGen = d3.linkVertical();
@@ -12,11 +13,21 @@ const linkGen = d3.linkVertical();
 class Graph extends Component {
   constructor(props) {
     super(props);
-    console.log('🚀 ~ props', props);
 
+    // this.removeNode = this.removeNode.bind(this);
     this.containerRefs = React.createRef();
     this.forceTick = this.forceTick.bind(this);
     simulation.on('tick', this.forceTick);
+    this.contextMenu = [
+      {
+        title: 'Remove Node',
+        action: this.props.removeNode
+      },
+      {
+        title: 'Create Edge',
+        action: () => console.log('TO DO!')
+      }
+    ];
   }
 
   componentDidMount() {
@@ -27,6 +38,13 @@ class Graph extends Component {
     this.renderTexts();
     this.setSimulation();
     tooltipFuncs.createTooltip();
+  }
+
+  componentDidUpdate() {
+    this.calculateLinks();
+    this.renderLinks();
+    this.renderNodes();
+    // this.renderTexts();
   }
 
   setSimulation() {
@@ -56,12 +74,13 @@ class Graph extends Component {
         oppacity: 0,
         d: linkGen
       });
-    console.log('rendered link');
   }
 
   renderNodes() {
-    this.nodes = this.container.selectAll('.nodes')
-      .data(this.props.nodes, d => d.id)
+    this.nodeGroups = this.container.selectAll('g.nodeGroup')
+      .data(this.props.nodes, d => d.id);
+
+    this.nodes = this.nodeGroups
       .enter()
       .append('g')
       .attr('class', 'nodeGroup')
@@ -77,6 +96,9 @@ class Graph extends Component {
       .on('end', dragFuncs.dragEnded));
 
     this.nodes.on('click', tooltipFuncs.displayTooltip);
+    this.nodes.on('contextmenu', d3ContextMenu(this.contextMenu));
+
+    this.nodeGroups.exit().remove();
   }
 
   renderTexts() {
@@ -90,6 +112,7 @@ class Graph extends Component {
 
   // Tick tock
   forceTick() {
+    console.log(this.nodes);
     console.log('tiktok');
     this.nodes.attrs({
       x: d => d.x,
