@@ -1,19 +1,19 @@
 import React from 'react'
-
 import { Graphik } from 'graphik';
 
 import 'graphik/dist/index.css'
-import nodeData from './resources/nodes.json';
-import edgeData from './resources/edges.json';
+// import nodeData from './resources/nodes.json';
+// import edgeData from './resources/edges.json';
+import data from './resources/savedData.json';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 
-const data = {
-  nodes: nodeData,
-  edges: edgeData
-}
+// const data = {
+//   nodes: nodeData,
+//   edges: edgeData
+// }
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,9 +33,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
+const saveData = (data) => {
+  console.log("🚀 ~ data", data)
+  
+  var a = document.createElement("a");
+  var file = new Blob([JSON.stringify(data)], {type: 'application/json'});
+  a.href = URL.createObjectURL(file);
+  a.download = 'json.json';
+  a.click();
+}
+
 const App = () => {
   const classes = useStyles();
-
 
   return (
   <div className={classes.root}>
@@ -44,7 +54,7 @@ const App = () => {
     <Typography id='title' variant="h2" component="h1" gutterBottom>
       Graphik
     </Typography>
-    <Graphik data={data}/>
+    <Graphik data={data} externalSaveGraph={saveData} />
   </Container>
   <footer className={classes.footer}>
     <Container maxWidth="sm">

@@ -52,6 +52,7 @@
   ],
   "dependencies": {
     "d3": "6.5.0",
+    "d3-context-menu": "^2.1.0",
     "d3-selection-multi": "1.0.1"
   }
 }

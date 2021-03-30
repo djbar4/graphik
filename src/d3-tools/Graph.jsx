@@ -12,6 +12,8 @@ const linkGen = d3.linkVertical();
 class Graph extends Component {
   constructor(props) {
     super(props);
+    console.log('🚀 ~ props', props);
+
     this.containerRefs = React.createRef();
     this.forceTick = this.forceTick.bind(this);
     simulation.on('tick', this.forceTick);
@@ -54,6 +56,7 @@ class Graph extends Component {
         oppacity: 0,
         d: linkGen
       });
+    console.log('rendered link');
   }
 
   renderNodes() {

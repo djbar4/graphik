@@ -14,6 +14,8 @@ export class Graphik extends Component {
     super(props);
 
     this.mapNodesToEdges();
+    this.saveGraph = this.saveGraph.bind(this);
+    console.log('🚀 ~ propssss', props);
 
     this.state = {
       nodes: props.data.nodes,
@@ -21,6 +23,26 @@ export class Graphik extends Component {
       nodeWidth,
       nodeHeight
     };
+  }
+
+  saveGraph() {
+    console.log('Saving Graph');
+    this.makeDataSavable();
+    this.props.externalSaveGraph(this.props.data);
+  }
+
+  makeDataSavable() {
+    this.props.data.edges.forEach(edge => {
+      edge.source = edge.source.id;
+      edge.target = edge.target.id;
+      delete edge.index;
+    });
+
+    this.props.data.nodes.forEach(node => {
+      delete node.vx;
+      delete node.vy;
+      delete node.index;
+    });
   }
 
   mapNodesToEdges() {
@@ -37,6 +59,9 @@ export class Graphik extends Component {
   render() {
     return (
       <div id='svgContainer'>
+        <button onClick={this.saveGraph}>
+          Save
+        </button>
         <div id='tooltip' />
         <svg className='canvas' width={canvasWidth} height={canvasHeight}>
           <rect width='100%' height='100%' fill='#284678' />
