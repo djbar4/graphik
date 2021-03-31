@@ -83,7 +83,7 @@ export class Graphik extends Component {
   render() {
     return (
       <div id='svgContainer' className={styles.svgContainer}>
-        <button onClick={this.saveGraph} className={styles.button}>
+        <button onClick={this.saveGraph} className={styles.saveButton}>
           Save
         </button>
         <div id='tooltip' />

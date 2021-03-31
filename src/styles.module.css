@@ -4,7 +4,9 @@
   background-color: #294678;
 }
 
-.button {
+
+/* Clean up the below assigning varaibles to button properties that are the same*/
+.saveButton {
 	border-color: black;
   border-width: 1px;
   background-color: rgb(74, 176, 235);
@@ -13,8 +15,21 @@
   font-family: monospace;
   position: absolute;
   font-size: x-large;
-}
+} 
 
+.editTooltipButton, .addAttributeTooltipButton, .saveTooltipButton, .cancelTooltipButton {
+  position: static;
+	border-color: black;
+  border-width: 1px;
+  background-color: rgb(74, 176, 235);
+  margin: 2%;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: x-large;
+  white-space: nowrap;
+  text-align: center;
+
+}
 
 
 h1 {
@@ -56,7 +71,12 @@ rect:target {
   margin-top: 1px
 }
 
-input {
+.attrText {
+  float: right;
+
+}
+
+.attrInput {
   float: right;
   border-radius: 3px;
   margin-left: 10px;

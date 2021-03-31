@@ -14,7 +14,6 @@ class Graph extends Component {
   constructor(props) {
     super(props);
 
-    // this.removeNode = this.removeNode.bind(this);
     this.containerRefs = React.createRef();
     this.forceTick = this.forceTick.bind(this);
     simulation.on('tick', this.forceTick);
@@ -102,7 +101,7 @@ class Graph extends Component {
   }
 
   renderTexts() {
-    this.texts = this.container.selectAll('.nodeGroup')
+    this.texts = this.container.selectAll('g.nodeGroup')
       .append('text')
       .text(d => d.name)
       .attrs({
