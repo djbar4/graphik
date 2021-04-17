@@ -2,10 +2,11 @@
 import * as d3 from 'd3';
 
 let node;
-
+let prevClass;
 function dragStarted (event) {
   node = getNodeFromEvent(event);
-  d3.select(node).attr('stroke', 'red');
+  prevClass = node.getAttribute('class');
+  d3.select(node).attr('class', 'node-dragging');
 }
 
 function dragged (event, d, simulation) {
@@ -19,7 +20,7 @@ function dragged (event, d, simulation) {
 
 function dragEnded(event) {
   if (!node.clicked) {
-    d3.select(node).attr('stroke', 'black');
+    d3.select(node).attr('class', prevClass);
   }
 }
 

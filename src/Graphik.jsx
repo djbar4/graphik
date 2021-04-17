@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Graph from './d3-tools/Graph';
 import styles from './styles.module.css';
+import Button from 'react-bootstrap/Button';
+import AddNodeModal from './d3-tools/AddNodeModal';
 
 const canvasWidth = '100%';
 const canvasHeight = '500';
@@ -17,12 +19,20 @@ export class Graphik extends Component {
     this.mapNodesToEdges();
     this.saveGraph = this.saveGraph.bind(this);
     this.removeNode = this.removeNode.bind(this);
+    this.handleAddNodeClick = this.handleAddNodeClick.bind(this);
+    this.addNewNode = this.addNewNode.bind(this);
+    this.handleModalClose = this.handleModalClose.bind(this);
+
     this.state = {
       nodes: props.data.nodes,
       edges: props.data.edges,
       nodeWidth,
       nodeHeight,
-      removeNode: this.removeNode
+      removeNode: this.removeNode,
+      addNode: this.handleAddNodeClick,
+      showAddNodeModal: false,
+      newNodeXPosition: null,
+      newNodeYPosition: null
     };
   }
 
@@ -80,17 +90,49 @@ export class Graphik extends Component {
     this.forceUpdate();
   }
 
+  handleAddNodeClick(d, e) {
+    this.setState({
+      showAddNodeModal: true,
+      newNodeXPosition: e.layerX,
+      newNodeYPosition: e.layerY
+    });
+    // console.log(d);
+    console.log(e);
+  }
+
+  handleModalClose() {
+    this.setState({ showAddNodeModal: false });
+  }
+
+  addNewNode(id, name, x, y) {
+    const newNode = {
+      id,
+      name,
+      x,
+      y
+    };
+    // console.log(newNode);
+    const tempNodes = this.state.nodes;
+    tempNodes.push(newNode);
+    this.setState({
+      nodes: tempNodes
+    });
+  }
+
   render() {
     return (
       <div id='svgContainer' className={styles.svgContainer}>
         <button onClick={this.saveGraph} className={styles.saveButton}>
           Save
         </button>
-        <div id='tooltip' />
-        <svg className='canvas' width={canvasWidth} height={canvasHeight}>
-          <rect width='100%' height='100%' fill='#284678' />
-          <Graph {...this.state} />
-        </svg>
+        <Graph {...this.state} />
+        <AddNodeModal
+          show={this.state.showAddNodeModal}
+          handleClose={this.handleModalClose}
+          addNewNode={this.addNewNode}
+          xPos={this.state.newNodeXPosition}
+          yPos={this.state.newNodeYPosition}
+        />
       </div>
     );
   }

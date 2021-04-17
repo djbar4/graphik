@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
-import styles from '../styles.module.css';
 import { addDefaultNodeAttributes } from './node-attributes';
 
-import tooltipFuncs from './tooltip';
+import Tooltip from './tooltip/Tooltip';
+
 import dragFuncs from './node-drag';
 import d3ContextMenu from 'd3-context-menu';
+
+const canvasWidth = '100%';
+const canvasHeight = '500';
 
 const simulation = d3.forceSimulation().alpha(0);
 const linkGen = d3.linkVertical();
@@ -16,8 +19,11 @@ class Graph extends Component {
 
     this.containerRefs = React.createRef();
     this.forceTick = this.forceTick.bind(this);
+    this.turnTooltipOn = this.turnTooltipOn.bind(this);
+    this.turnTooltipOff = this.turnTooltipOff.bind(this);
+
     simulation.on('tick', this.forceTick);
-    this.contextMenu = [
+    this.nodeContextMenu = [
       {
         title: 'Remove Node',
         action: this.props.removeNode
@@ -27,23 +33,44 @@ class Graph extends Component {
         action: () => console.log('TO DO!')
       }
     ];
+
+    this.backgroundContextMenu = [
+      {
+        title: 'Add Node',
+        action: this.props.addNode
+      }
+    ];
+
+    this.state = {
+      showTooltip: false,
+      selectedNode: null
+    };
   }
 
   componentDidMount() {
-    this.container = d3.select(this.containerRefs.current);
+    this.graphContainer = d3.select(this.containerRefs.current).select('.graph');
+
+    this.rectBackground = d3.select(this.containerRefs.current).select('rect');
+    this.rectBackground.on('contextmenu', d3ContextMenu(this.backgroundContextMenu));
+
     this.calculateLinks();
     this.renderLinks();
     this.renderNodes();
     this.renderTexts();
     this.setSimulation();
-    tooltipFuncs.createTooltip();
   }
 
   componentDidUpdate() {
     this.calculateLinks();
     this.renderLinks();
     this.renderNodes();
-    // this.renderTexts();
+    // These 2 are only here for when adding nodes, not very efficient...
+    console.log(this.props.nodes.length);
+    console.log(this.nodes);
+    // if (this.props.nodes.length !== this.nodes.length) {
+    //   this.renderTexts();
+    //   this.setSimulation();
+    // }
   }
 
   setSimulation() {
@@ -62,7 +89,7 @@ class Graph extends Component {
   }
 
   renderLinks() {
-    this.lines = this.container.selectAll('path')
+    this.lines = this.graphContainer.selectAll('path')
       .data(this.calcEdges)
       .join('path')
       .attrs({
@@ -76,7 +103,7 @@ class Graph extends Component {
   }
 
   renderNodes() {
-    this.nodeGroups = this.container.selectAll('g.nodeGroup')
+    this.nodeGroups = this.graphContainer.selectAll('g.nodeGroup')
       .data(this.props.nodes, d => d.id);
 
     this.nodes = this.nodeGroups
@@ -94,15 +121,34 @@ class Graph extends Component {
       })
       .on('end', dragFuncs.dragEnded));
 
-    this.nodes.on('click', tooltipFuncs.displayTooltip);
-    this.nodes.on('contextmenu', d3ContextMenu(this.contextMenu));
+    // this.nodes.on('click', tooltipFuncs.displayTooltip);
+    this.nodes.on('click', this.turnTooltipOn);
+    this.nodes.on('contextmenu', d3ContextMenu(this.nodeContextMenu));
 
     this.nodeGroups.exit().remove();
   }
 
+  turnTooltipOn(event) {
+    this.setState((state) => {
+      const showTooltip = state.showTooltip ? event.target !== state.selectedNode : true;
+      return {
+        showTooltip: showTooltip,
+        selectedNode: event.target
+      };
+    });
+  }
+
+  // Add some kind of logic to update the names on the fields
+  turnTooltipOff() {
+    this.setState({
+      showTooltip: false,
+      selectedNode: null
+    });
+  }
+
   renderTexts() {
-    this.texts = this.container.selectAll('g.nodeGroup')
-      .append('text')
+    this.texts = this.graphContainer.selectAll('g.nodeGroup').append('text');
+    this.texts
       .text(d => d.name)
       .attrs({
         id: d => d.id + '_text'
@@ -111,8 +157,8 @@ class Graph extends Component {
 
   // Tick tock
   forceTick() {
-    console.log(this.nodes);
     console.log('tiktok');
+    console.log(this.texts);
     this.nodes.attrs({
       x: d => d.x,
       y: d => d.y
@@ -129,8 +175,16 @@ class Graph extends Component {
   }
 
   render() {
+    console.log('🚀 ~ Graph.jsx Rendered');
+    console.log(this.props);
     return (
-      <g className='graph' ref={this.containerRefs} />
+      <div ref={this.containerRefs}>
+        <Tooltip show={this.state.showTooltip} turnOff={this.turnTooltipOff} selectedNode={this.state.selectedNode} />
+        <svg className='canvas' width={canvasWidth} height={canvasHeight}>
+          <rect className='background' width='100%' height='100%' fill='#284678' />
+          <g className='graph' />
+        </svg>
+      </div>
     );
   }
 }

@@ -6,9 +6,9 @@ function addDefaultNodeAttributes(el, props) {
     rx: '10',
     fill: d => d.fill ? d.fill : '#6fa6de',
     class: 'node',
-    stroke: 'black',
-    x: props.x ? props.x : 100,
-    y: props.y ? props.y : 100
+    stroke: 'black'
+    // x: props.x ? props.x : 100,
+    // y: props.y ? props.y : 100
   });
 }
 

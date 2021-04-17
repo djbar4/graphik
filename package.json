@@ -51,8 +51,11 @@
     "dist"
   ],
   "dependencies": {
+    "bootstrap": "^4.6.0",
     "d3": "6.5.0",
     "d3-context-menu": "^2.1.0",
-    "d3-selection-multi": "1.0.1"
+    "d3-selection-multi": "1.0.1",
+    "react-bootstrap": "^1.5.2",
+    "react-custom-scrollbars": "^4.2.1"
   }
 }

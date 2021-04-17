@@ -10,7 +10,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
-
+import Button from 'react-bootstrap/Button';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
 // const data = {
 //   nodes: nodeData,
 //   edges: edgeData
@@ -51,11 +53,12 @@ const App = () => {
 
   return (
     <div className={classes.root}>
+      <Navbar bg="dark" variant="dark">
+      <Navbar.Brand >Graphix</Navbar.Brand>
+      </Navbar>
       <CssBaseline />
       <Container component="main" className={classes.main}>
-        <Typography id='title' variant="h2" component="h1" gutterBottom>
-          Graphik
-        </Typography>
+
         <Graphik data={data} externalSaveGraph={saveData} />
       </Container>
       <footer className={classes.footer}>
