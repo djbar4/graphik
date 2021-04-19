@@ -13,6 +13,8 @@ const canvasHeight = '500';
 const simulation = d3.forceSimulation().alpha(0);
 const linkGen = d3.linkVertical();
 
+let creatingNewEdge = false;
+
 class Graph extends Component {
   constructor(props) {
     super(props);
@@ -21,6 +23,8 @@ class Graph extends Component {
     this.forceTick = this.forceTick.bind(this);
     this.turnTooltipOn = this.turnTooltipOn.bind(this);
     this.turnTooltipOff = this.turnTooltipOff.bind(this);
+    this.createNewLine = this.createNewLine.bind(this);
+    this.moveNewLine = this.moveNewLine.bind(this);
 
     simulation.on('tick', this.forceTick);
     this.nodeContextMenu = [
@@ -30,7 +34,7 @@ class Graph extends Component {
       },
       {
         title: 'Create Edge',
-        action: () => console.log('TO DO!')
+        action: this.createNewLine
       }
     ];
 
@@ -48,8 +52,8 @@ class Graph extends Component {
   }
 
   componentDidMount() {
+    this.svgCanvas = d3.select(this.containerRefs.current).select('.canvas');
     this.graphContainer = d3.select(this.containerRefs.current).select('.graph');
-
     this.rectBackground = d3.select(this.containerRefs.current).select('rect');
     this.rectBackground.on('contextmenu', d3ContextMenu(this.backgroundContextMenu));
 
@@ -65,11 +69,10 @@ class Graph extends Component {
     this.renderLinks();
     this.renderNodes();
     // These 2 are only here for when adding nodes, not very efficient...
-    console.log(this.props.nodes.length);
-    console.log(this.nodes);
     // if (this.props.nodes.length !== this.nodes.length) {
-    //   this.renderTexts();
-    //   this.setSimulation();
+    // this.renderTexts();
+    this.setSimulation();
+    this.forceTick();
     // }
   }
 
@@ -90,8 +93,10 @@ class Graph extends Component {
 
   renderLinks() {
     this.lines = this.graphContainer.selectAll('path')
-      .data(this.calcEdges)
-      .join('path')
+      .data(this.calcEdges);
+
+    this.lines.enter().append('path')
+      .merge(this.lines)
       .attrs({
         class: 'edge',
         fill: 'none',
@@ -100,6 +105,57 @@ class Graph extends Component {
         oppacity: 0,
         d: linkGen
       });
+  }
+
+  createNewLine(d, ev) {
+    creatingNewEdge = true;
+
+    const srcNodeId = ev.target.getAttribute('id');
+
+    const newLineData = [[
+      ev.layerX, ev.layerY,
+      ev.layerX, ev.layerY
+    ]];
+
+    this.rectBackground.on('mousemove', (e) => creatingNewEdge ? this.moveNewLine(e, newLineData) : null);
+    this.graphContainer.on('mousemove', (e) => creatingNewEdge ? this.moveNewLine(e, newLineData) : null);
+
+    this.graphContainer.on('click', (e) => {
+      if (creatingNewEdge) {
+        if (e.target.tagName === 'rect') {
+          const targetNodeId = e.target.getAttribute('id');
+          this.props.addNewEdge(srcNodeId, targetNodeId);
+        }
+        creatingNewEdge = false;
+        this.svgCanvas.selectAll('.newEdge').remove();
+      }
+    });
+
+    this.rectBackground.on('click', () => {
+      creatingNewEdge = false;
+      this.svgCanvas.selectAll('.newEdge').remove();
+    });
+  }
+
+  moveNewLine(e, newLineData) {
+    newLineData[0][2] = d3.pointer(e)[0];
+    newLineData[0][3] = d3.pointer(e)[1];
+
+    const newEdge = this.svgCanvas.selectAll('.newEdge')
+      .data(newLineData);
+
+    newEdge.enter()
+      .append('line')
+      .merge(newEdge)
+      .attrs({
+        class: 'newEdge',
+        x1: d => d[0],
+        y1: d => d[1],
+        x2: d => d[2],
+        y2: d => d[3],
+        stroke: 'black'
+      })
+      .raise();
   }
 
   renderNodes() {
@@ -111,6 +167,8 @@ class Graph extends Component {
       .append('g')
       .attr('class', 'nodeGroup')
       .attr('id', d => `${d.id}_group`)
+      .attr('x', d => d.x)
+      .attr('y', d => d.y)
       .append('rect');
 
     addDefaultNodeAttributes(this.nodes, this.props);
@@ -122,13 +180,15 @@ class Graph extends Component {
       .on('end', dragFuncs.dragEnded));
 
     // this.nodes.on('click', tooltipFuncs.displayTooltip);
-    this.nodes.on('click', this.turnTooltipOn);
+    this.nodes.on('click', (e) => creatingNewEdge ? null : this.turnTooltipOn(e));
     this.nodes.on('contextmenu', d3ContextMenu(this.nodeContextMenu));
 
     this.nodeGroups.exit().remove();
   }
 
   turnTooltipOn(event) {
+    console.log('turning on');
+    console.log(event);
     this.setState((state) => {
       const showTooltip = state.showTooltip ? event.target !== state.selectedNode : true;
       return {
@@ -147,8 +207,8 @@ class Graph extends Component {
   }
 
   renderTexts() {
-    this.texts = this.graphContainer.selectAll('g.nodeGroup').append('text');
-    this.texts
+    this.texts = this.graphContainer.selectAll('.nodeGroup')
+      .append('text')
       .text(d => d.name)
       .attrs({
         id: d => d.id + '_text'
@@ -158,7 +218,8 @@ class Graph extends Component {
   // Tick tock
   forceTick() {
     console.log('tiktok');
-    console.log(this.texts);
+    // console.log(this.texts);
+    // console.log(this.textys);
     this.nodes.attrs({
       x: d => d.x,
       y: d => d.y
@@ -176,7 +237,6 @@ class Graph extends Component {
 
   render() {
     console.log('🚀 ~ Graph.jsx Rendered');
-    console.log(this.props);
     return (
       <div ref={this.containerRefs}>
         <Tooltip show={this.state.showTooltip} turnOff={this.turnTooltipOff} selectedNode={this.state.selectedNode} />

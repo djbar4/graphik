@@ -42,8 +42,10 @@ export default class AddNodeModal extends Component {
 
   // Add logic to check if ID already exists
   handleSaveButtonClick() {
-    if (this.state.nodeId !== '' && this.state.nodeName !== '') {
-      this.props.addNewNode(this.state.nodeId, this.state.nodeName, this.props.xPos, this.props.yPos);
+    if (this.state.nodeId !== '') {
+    // if (this.state.nodeId !== '' && this.state.nodeName !== '') {
+      // this.props.addNewNode(this.state.nodeId, this.state.nodeName, this.props.xPos, this.props.yPos);
+      this.props.addNewNode(this.state.nodeId, this.props.xPos, this.props.yPos);
     }
     this.props.handleClose();
   }
@@ -65,9 +67,9 @@ export default class AddNodeModal extends Component {
               <Col>
                 <Form.Control onChange={(e) => this.handleNodeIDChange(e)} style={formStyles.control} placeholder='Unique Node ID' />
               </Col>
-              <Col>
+              {/* <Col>
                 <Form.Control onChange={(e) => this.handleNodeNameChange(e)} style={formStyles.control} placeholder='Node Name' />
-              </Col>
+              </Col> */}
             </Row>
           </Form>
         </Modal.Body>

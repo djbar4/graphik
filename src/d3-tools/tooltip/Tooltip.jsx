@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { Button, Card, Fade, ButtonToolbar } from 'react-bootstrap';
 import * as d3 from 'd3';
+import _ from 'lodash';
+
+import { Button, Card, Fade, ButtonToolbar } from 'react-bootstrap';
 import NodeAttributes from './NodeAttributes';
 import AddAttributeModal from './AddAttributeModal';
-import _ from 'lodash';
+import { cleanAttributes } from './utils';
 /* eslint-disable react/jsx-closing-tag-location */
 
 let prevClass = null;
@@ -53,8 +55,9 @@ export default class Tooltip extends Component {
   // is only confirmed when the user clicks save.
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.selectedNode !== prevState.selectedNode && nextProps.selectedNode !== null) {
+      const attributes = cleanAttributes(_.cloneDeep(nextProps.selectedNode.__data__));
       return {
-        attributes: _.cloneDeep(nextProps.selectedNode.__data__),
+        attributes,
         selectedNode: nextProps.selectedNode
       };
     } else return null;

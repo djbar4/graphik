@@ -14,20 +14,11 @@ export default class NodeAttributes extends Component {
     this.props.updateValues(key, value);
   }
 
-  cleanAttributes() {
-    return Object.keys(this.props.attributes).reduce((prev, k) => {
-      if (!(k === 'vy' || k === 'vx' || k === 'index' || k === 'y' || k === 'x')) {
-        prev.push(k);
-      }
-      return prev;
-    }, []);
-  }
-
   render() {
-    const attributes = this.cleanAttributes();
+    const attributeNames = Object.keys(this.props.attributes);
     return (
       <Form>
-        {attributes.map(k => ( // Having the key include the props.attribute.id means that changing ID value is not fluid
+        {attributeNames.map(k => ( // Having the key include the props.attribute.id means that changing ID value is not fluid
           <Form.Group key={`${k}_${this.props.attributes.id}`} as={Row} controlId='formPlaintextPassword' attribute={k}>
             <Form.Label>
               {k}

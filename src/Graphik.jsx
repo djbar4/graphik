@@ -17,11 +17,13 @@ export class Graphik extends Component {
     super(props);
 
     this.mapNodesToEdges();
+    this.mapNodesToEdge = this.mapNodesToEdge.bind(this);
     this.saveGraph = this.saveGraph.bind(this);
     this.removeNode = this.removeNode.bind(this);
     this.handleAddNodeClick = this.handleAddNodeClick.bind(this);
     this.addNewNode = this.addNewNode.bind(this);
     this.handleModalClose = this.handleModalClose.bind(this);
+    this.addNewEdge = this.addNewEdge.bind(this);
 
     this.state = {
       nodes: props.data.nodes,
@@ -30,6 +32,7 @@ export class Graphik extends Component {
       nodeHeight,
       removeNode: this.removeNode,
       addNode: this.handleAddNodeClick,
+      addNewEdge: this.addNewEdge,
       showAddNodeModal: false,
       newNodeXPosition: null,
       newNodeYPosition: null
@@ -66,13 +69,17 @@ export class Graphik extends Component {
 
   mapNodesToEdges() {
     this.props.data.edges.forEach(edge => {
-      const sourceNode = this.props.data.nodes.filter(node => node.id === edge.source);
-      const targetNode = this.props.data.nodes.filter(node => node.id === edge.target);
-      // Add error handling for if a node is not found
-
-      edge.source = sourceNode[0];
-      edge.target = targetNode[0];
+      this.mapNodesToEdge(edge);
     });
+  }
+
+  mapNodesToEdge(edge) {
+    const sourceNode = this.props.data.nodes.filter(node => node.id === edge.source);
+    const targetNode = this.props.data.nodes.filter(node => node.id === edge.target);
+    // Add error handling for if a node is not found
+
+    edge.source = sourceNode[0];
+    edge.target = targetNode[0];
   }
 
   removeNode(d, e) {
@@ -96,18 +103,15 @@ export class Graphik extends Component {
       newNodeXPosition: e.layerX,
       newNodeYPosition: e.layerY
     });
-    // console.log(d);
-    console.log(e);
   }
 
   handleModalClose() {
     this.setState({ showAddNodeModal: false });
   }
 
-  addNewNode(id, name, x, y) {
+  addNewNode(id, x, y) {
     const newNode = {
       id,
-      name,
       x,
       y
     };
@@ -119,13 +123,29 @@ export class Graphik extends Component {
     });
   }
 
+  addNewEdge(source, target) {
+    // Add logic to check if edge already exists between nodes or if node is itself
+    const newEdge = {
+      source,
+      target
+    };
+
+    const tempEdges = this.state.edges;
+    this.mapNodesToEdge(newEdge);
+    tempEdges.push(newEdge);
+    this.setState({
+      edges: tempEdges
+    });
+  }
+
   render() {
     return (
       <div id='svgContainer' className={styles.svgContainer}>
         <button onClick={this.saveGraph} className={styles.saveButton}>
           Save
         </button>
-        <Graph {...this.state} />
+        {/* Using key here is to remount every time, but this could be made better... */}
+        <Graph key={Date.now()} {...this.state} />
         <AddNodeModal
           show={this.state.showAddNodeModal}
           handleClose={this.handleModalClose}
