@@ -16,6 +16,7 @@ const config = {
 export class Graphik extends Component {
   constructor(props) {
     console.log('constructin graphik');
+    console.log(props);
     super(props);
 
     this.mapNodesToEdge = this.mapNodesToEdge.bind(this);
@@ -28,45 +29,27 @@ export class Graphik extends Component {
     this.removeEdge = this.removeEdge.bind(this);
     this.callRerender = this.callRerender.bind(this);
 
-    this.calculateLinks = this.calculateLinks.bind(this);
-
-    this.mergeUserConfig(props.userConfig, config);
-
+    this.mergeUserConfig(this.props.userConfig, config);
     this.state = {
       nodes: props.data.nodes,
+      edges: props.data.edges,
       removeNode: this.removeNode,
       addNode: this.handleAddNodeClick,
       addNewEdge: this.addNewEdge,
       removeEdge: this.removeEdge,
       callRerender: this.callRerender,
-      calculateLinks: this.calculateLinks,
       showAddNodeModal: false,
       newNodeXPosition: null,
       newNodeYPosition: null,
       config
     };
     this.mapNodesToEdges();
-    this.state.edges = this.calculateLinks(props.data.edges);
   }
 
   mergeUserConfig(userConfig, config) {
     for (const k in userConfig) {
       config[k] = userConfig[k];
     }
-  }
-
-  calculateLinks(edges) {
-    // A new variable is made here, so it is not longer the same reference as the prop.
-    // Putting this logic in the parent is worth a shot.
-    const conf = this.state.config;
-    return edges.reduce((arr, curr) => {
-      const source = [curr.sourceNode.x + (conf.nodeWidth / 2), curr.sourceNode.y + (conf.nodeHeight / 2)];
-      const target = [curr.targetNode.x + (conf.nodeWidth / 2), curr.targetNode.y + (conf.nodeHeight / 2)];
-      const id = `${curr.sourceNode.id}_${curr.targetNode.id}_edge`;
-      const attributes = { ...curr.attributes, sourceNode: curr.sourceNode.id, targetNode: curr.targetNode.id };
-      arr.push({ source, target, id, attributes, sourceNode: curr.sourceNode, targetNode: curr.targetNode });
-      return arr;
-    }, []);
   }
 
   saveGraph() {
@@ -83,8 +66,8 @@ export class Graphik extends Component {
     };
 
     data.edges.forEach(edge => {
-      edge.sourceNode = edge.sourceNode.id;
-      edge.targetNode = edge.targetNode.id;
+      edge.source = edge.source.id;
+      edge.target = edge.target.id;
       delete edge.index;
     });
 
@@ -104,12 +87,12 @@ export class Graphik extends Component {
   }
 
   mapNodesToEdge(edge) {
-    const sourceNode = this.state.nodes.filter(node => node.id === (edge.sourceNode.id ? edge.sourceNode.id : edge.sourceNode));
-    const targetNode = this.state.nodes.filter(node => node.id === (edge.targetNode.id ? edge.targetNode.id : edge.targetNode));
+    const sourceNode = this.state.nodes.filter(node => node.id === (edge.source.id ? edge.source.id : edge.source));
+    const targetNode = this.state.nodes.filter(node => node.id === (edge.target.id ? edge.target.id : edge.target));
     // Add error handling for if a node is not found
 
-    edge.sourceNode = sourceNode[0];
-    edge.targetNode = targetNode[0];
+    edge.source = sourceNode[0];
+    edge.target = targetNode[0];
   }
 
   removeNode(d, e) {
@@ -117,7 +100,7 @@ export class Graphik extends Component {
       return node.id !== d.id;
     });
     const tempEdges = this.state.edges.filter(edge => {
-      return (edge.sourceNode.id !== d.id && edge.targetNode.id !== d.id);
+      return (edge.source.id !== d.id && edge.target.id !== d.id);
     });
 
     this.setState({
@@ -170,16 +153,13 @@ export class Graphik extends Component {
   }
 
   removeEdge(edge) {
-    const newEdges = this.state.edges.filter(e => !(e.sourceNode.id === edge.attributes.sourceNode && e.targetNode.id === edge.attributes.targetNode));
+    const newEdges = this.state.edges.filter(e => !(e.source.id === edge.attributes.sourceNode && e.target.id === edge.attributes.targetNode));
     this.setState({
       edges: newEdges
     });
   }
 
   callRerender() {
-    console.log('called rerender');
-    console.log(this.state);
-
     this.forceUpdate();
   }
 

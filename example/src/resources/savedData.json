@@ -69,41 +69,41 @@
     ],
     "edges": [
         {
-            "sourceNode": "Nick",
-            "targetNode": "BAR",
+            "source": "Nick",
+            "target": "BAR",
             "attributes": {
                 "text": "Hello",
                 "weight": 100
             }
         },
         {
-            "sourceNode": "Nick",
-            "targetNode": "CHARLIE",
+            "source": "Nick",
+            "target": "CHARLIE",
             "weight": 50
         },
         {
-            "sourceNode": "CHARLIE",
-            "targetNode": "DELTA",
+            "source": "CHARLIE",
+            "target": "DELTA",
             "weight": 50
         },
         {
-            "sourceNode": "DELTA",
-            "targetNode": "VRA",
+            "source": "DELTA",
+            "target": "VRA",
             "weight": 50
         },
         {
-            "sourceNode": "ASF",
-            "targetNode": "VRA",
+            "source": "ASF",
+            "target": "VRA",
             "weight": 50
         },
         {
-            "sourceNode": "ECH1122ass1",
-            "targetNode": "BAR",
+            "source": "ECH1122ass1",
+            "target": "BAR",
             "weight": 50
         },
         {
-            "sourceNode": "Az",
-            "targetNode": "156"
+            "source": "Az",
+            "target": "156"
         }
     ]
 }

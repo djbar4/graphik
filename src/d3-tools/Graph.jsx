@@ -75,7 +75,9 @@ class Graph extends Component {
     setContainerContextMenuEvent(this.svgContainer, this.backgroundContextMenu);
     // setContainerClickEvent(this.svgContainer, isEdgeBeingCreated, this.parentSvg);
     // this.svgBackground.on('contextmenu', d3ContextMenu(this.backgroundContextMenu));
-    this.renderLinks(this.props.edges);
+
+    this.calculateLinks();
+    this.renderLinks();
     this.renderNodes();
     this.renderTexts();
     this.calculateTextWidth();
@@ -95,8 +97,8 @@ class Graph extends Component {
   }
 
   componentDidUpdate() {
-    const edges = this.props.calculateLinks(this.props.edges);
-    this.renderLinks(edges);
+    this.calculateLinks();
+    this.renderLinks();
     this.renderNodes();
     // These 2 are only here for when adding nodes, not very efficient...
     // if (this.props.nodes.length !== this.nodes.length) {
@@ -112,9 +114,25 @@ class Graph extends Component {
       .restart();
   }
 
-  renderLinks(edges) {
+  calculateLinks() {
+    console.log('this.props.edges');
+    console.log(this.props.edges);
+
+    // A new variable is made here, so it is not longer the same reference as the prop.
+    // Putting this logic in the parent is worth a shot.
+    this.calcEdges = this.props.edges.reduce((arr, curr) => {
+      const source = [curr.source.x + (this.props.config.nodeWidth / 2), curr.source.y + (this.props.config.nodeHeight / 2)];
+      const target = [curr.target.x + (this.props.config.nodeWidth / 2), curr.target.y + (this.props.config.nodeHeight / 2)];
+      const id = `${curr.source.id}_${curr.target.id}_edge`;
+      const attributes = { ...curr.attributes, sourceNode: curr.source.id, targetNode: curr.target.id };
+      arr.push({ source, target, id, attributes });
+      return arr;
+    }, []);
+  }
+
+  renderLinks() {
     this.lines = this.graphContainer.selectAll('path')
-      .data(edges);
+      .data(this.calcEdges);
 
     this.lines.enter().append('path')
       .merge(this.lines)
@@ -268,8 +286,8 @@ class Graph extends Component {
 
     this.texts.selectAll('tspan').attr('x', d => d.x + (this.props.config.nodeHeight / 2));
 
-    const edges = this.props.calculateLinks(this.props.edges);
-    this.renderLinks(edges);
+    this.calculateLinks();
+    this.renderLinks();
     this.texts.raise();
   }
 
