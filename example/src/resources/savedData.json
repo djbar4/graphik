@@ -1,1 +1,109 @@
-{"nodes":[{"id":"Nick","name":"Nick","location":"Africa","fill":"black","x":385,"y":24.999996185302734,"Foo":"Bars"},{"id":"BAR","name":"Something Else","location":"Europe or somewhere","x":533,"y":91},{"id":"CHARLIE","name":"Test 3","location":"Europe","x":298,"y":79},{"id":"DELTA","name":"Test 4","location":"Europe","x":298,"y":160},{"id":"ECH1122ass1","name":"Test 5asdasd","location":"Europezxccz","x":536,"y":218.99998474121094,"zxc":"fasfasfsaf","Fea":"ASdfzszxf","gasgsatgsa":"zxczxc"},{"id":"VRA","name":"Test 6","location":"Europe","x":299,"y":228.99998474121094},{"id":"ASF","name":"Test 9","location":"Europe","x":299,"y":304.99998474121094},{"id":"156","x":391,"y":105,"name":"Created"}],"edges":[{"source":"Nick","target":"BAR","weight":50},{"source":"Nick","target":"CHARLIE","weight":50},{"source":"CHARLIE","target":"DELTA","weight":50},{"source":"DELTA","target":"VRA","weight":50},{"source":"ASF","target":"VRA","weight":50},{"source":"ECH1122ass1","target":"BAR","weight":50}]}
+{
+    "nodes": [
+        {
+            "id": "Nick",
+            "name": "Nick",
+            "location": "Africa",
+            "fill": "black",
+            "x": 385,
+            "y": 24.999996185302734,
+            "Foo": "Bars"
+        },
+        {
+            "id": "BAR",
+            "name": "Something Else",
+            "location": "Europe or somewhere",
+            "x": 533,
+            "y": 91
+        },
+        {
+            "id": "CHARLIE",
+            "name": "Test 3",
+            "location": "Europe",
+            "x": 298,
+            "y": 79
+        },
+        {
+            "id": "DELTA",
+            "name": "Test 4",
+            "location": "Europe",
+            "x": 298,
+            "y": 160
+        },
+        {
+            "id": "ECH1122ass1",
+            "name": "Test 5asdasd",
+            "location": "Europezxccz",
+            "x": 536,
+            "y": 218.99998474121094,
+            "zxc": "fasfasfsaf",
+            "Fea": "ASdfzszxf",
+            "gasgsatgsa": "zxczxc"
+        },
+        {
+            "id": "VRA",
+            "name": "Test 6",
+            "location": "Europe",
+            "x": 299,
+            "y": 228.99998474121094
+        },
+        {
+            "id": "ASF",
+            "name": "Test 9",
+            "location": "Europe",
+            "x": 299,
+            "y": 304.99998474121094
+        },
+        {
+            "id": "156",
+            "x": 384.2588806152344,
+            "y": 120.66990661621094,
+            "name": "Created"
+        },
+        {
+            "id": "Az",
+            "name": "A",
+            "x": 422.99998474121094,
+            "y": 204
+        }
+    ],
+    "edges": [
+        {
+            "sourceNode": "Nick",
+            "targetNode": "BAR",
+            "attributes": {
+                "text": "Hello",
+                "weight": 100
+            }
+        },
+        {
+            "sourceNode": "Nick",
+            "targetNode": "CHARLIE",
+            "weight": 50
+        },
+        {
+            "sourceNode": "CHARLIE",
+            "targetNode": "DELTA",
+            "weight": 50
+        },
+        {
+            "sourceNode": "DELTA",
+            "targetNode": "VRA",
+            "weight": 50
+        },
+        {
+            "sourceNode": "ASF",
+            "targetNode": "VRA",
+            "weight": 50
+        },
+        {
+            "sourceNode": "ECH1122ass1",
+            "targetNode": "BAR",
+            "weight": 50
+        },
+        {
+            "sourceNode": "Az",
+            "targetNode": "156"
+        }
+    ]
+}

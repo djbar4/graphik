@@ -26,6 +26,8 @@ export default class AddNodeModal extends Component {
   constructor(props) {
     super(props);
 
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+
     this.state = {
       nodeId: '',
       nodeName: ''
@@ -42,12 +44,18 @@ export default class AddNodeModal extends Component {
 
   // Add logic to check if ID already exists
   handleSaveButtonClick() {
-    if (this.state.nodeId !== '') {
-    // if (this.state.nodeId !== '' && this.state.nodeName !== '') {
-      // this.props.addNewNode(this.state.nodeId, this.state.nodeName, this.props.xPos, this.props.yPos);
-      this.props.addNewNode(this.state.nodeId, this.props.xPos, this.props.yPos);
+    // if (this.state.nodeId !== '') {
+    if (this.state.nodeId !== '' && this.state.nodeName !== '') {
+      this.props.addNewNode(this.state.nodeId, this.state.nodeName, this.props.xPos, this.props.yPos);
+      // this.props.addNewNode(this.state.nodeId, this.props.xPos, this.props.yPos);
     }
     this.props.handleClose();
+  }
+
+  handleKeyPress(e) {
+    if (e.key === 'Enter') {
+      this.handleSaveButtonClick();
+    }
   }
 
   render() {
@@ -65,11 +73,11 @@ export default class AddNodeModal extends Component {
           <Form>
             <Row>
               <Col>
-                <Form.Control onChange={(e) => this.handleNodeIDChange(e)} style={formStyles.control} placeholder='Unique Node ID' />
+                <Form.Control onKeyPress={this.handleKeyPress} onChange={(e) => this.handleNodeIDChange(e)} style={formStyles.control} placeholder='Unique Node ID' />
               </Col>
-              {/* <Col>
-                <Form.Control onChange={(e) => this.handleNodeNameChange(e)} style={formStyles.control} placeholder='Node Name' />
-              </Col> */}
+              <Col>
+                <Form.Control onKeyPress={this.handleKeyPress} onChange={(e) => this.handleNodeNameChange(e)} style={formStyles.control} placeholder='Node Name' />
+              </Col>
             </Row>
           </Form>
         </Modal.Body>
@@ -77,7 +85,7 @@ export default class AddNodeModal extends Component {
           <Button style={formStyles.button} variant='secondary' onClick={this.props.handleClose}>
             Close
           </Button>
-          <Button style={formStyles.button} variant='primary' onClick={() => this.handleSaveButtonClick()}>
+          <Button style={formStyles.button} variant='info' onClick={() => this.handleSaveButtonClick()}>
             Save
           </Button>
         </Modal.Footer>

@@ -27,6 +27,8 @@ export default class AddAtributeModal extends Component {
   constructor(props) {
     super(props);
 
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+
     this.state = {
       attrName: '',
       attrVal: ''
@@ -48,6 +50,12 @@ export default class AddAtributeModal extends Component {
     this.props.handleClose();
   }
 
+  handleKeyPress(e) {
+    if (e.key === 'Enter') {
+      this.handleSaveButtonClick();
+    }
+  }
+
   render() {
     return (
       <Modal
@@ -63,10 +71,10 @@ export default class AddAtributeModal extends Component {
           <Form>
             <Row>
               <Col>
-                <Form.Control onChange={(e) => this.handleAttributeNameChange(e)} style={formStyles.control} placeholder='Attribute Name' />
+                <Form.Control onKeyPress={this.handleKeyPress} onChange={(e) => this.handleAttributeNameChange(e)} style={formStyles.control} placeholder='Attribute Name' />
               </Col>
               <Col>
-                <Form.Control onChange={(e) => this.handleAttributeValueChange(e)} style={formStyles.control} placeholder='Attribute Value' />
+                <Form.Control onKeyPress={this.handleKeyPress} onChange={(e) => this.handleAttributeValueChange(e)} style={formStyles.control} placeholder='Attribute Value' />
               </Col>
             </Row>
           </Form>
@@ -75,7 +83,7 @@ export default class AddAtributeModal extends Component {
           <Button style={formStyles.button} variant='secondary' onClick={this.props.handleClose}>
             Close
           </Button>
-          <Button style={formStyles.button} variant='primary' onClick={() => this.handleSaveButtonClick()}>
+          <Button style={formStyles.button} variant='info' onClick={() => this.handleSaveButtonClick()}>
             Save
           </Button>
         </Modal.Footer>

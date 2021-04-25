@@ -4,19 +4,20 @@ import styles from './styles.module.css';
 import Button from 'react-bootstrap/Button';
 import AddNodeModal from './d3-tools/AddNodeModal';
 
-const canvasWidth = '100%';
-const canvasHeight = '500';
-
-const nodeWidth = 50;
-const nodeHeight = 50;
-
 // Add a save button.
+
+const config = {
+  nodeWidth: 50,
+  nodeHeight: 50,
+  nodeRx: 10
+
+};
 
 export class Graphik extends Component {
   constructor(props) {
+    console.log('constructin graphik');
     super(props);
 
-    this.mapNodesToEdges();
     this.mapNodesToEdge = this.mapNodesToEdge.bind(this);
     this.saveGraph = this.saveGraph.bind(this);
     this.removeNode = this.removeNode.bind(this);
@@ -24,19 +25,48 @@ export class Graphik extends Component {
     this.addNewNode = this.addNewNode.bind(this);
     this.handleModalClose = this.handleModalClose.bind(this);
     this.addNewEdge = this.addNewEdge.bind(this);
+    this.removeEdge = this.removeEdge.bind(this);
+    this.callRerender = this.callRerender.bind(this);
+
+    this.calculateLinks = this.calculateLinks.bind(this);
+
+    this.mergeUserConfig(props.userConfig, config);
 
     this.state = {
       nodes: props.data.nodes,
-      edges: props.data.edges,
-      nodeWidth,
-      nodeHeight,
       removeNode: this.removeNode,
       addNode: this.handleAddNodeClick,
       addNewEdge: this.addNewEdge,
+      removeEdge: this.removeEdge,
+      callRerender: this.callRerender,
+      calculateLinks: this.calculateLinks,
       showAddNodeModal: false,
       newNodeXPosition: null,
-      newNodeYPosition: null
+      newNodeYPosition: null,
+      config
     };
+    this.mapNodesToEdges();
+    this.state.edges = this.calculateLinks(props.data.edges);
+  }
+
+  mergeUserConfig(userConfig, config) {
+    for (const k in userConfig) {
+      config[k] = userConfig[k];
+    }
+  }
+
+  calculateLinks(edges) {
+    // A new variable is made here, so it is not longer the same reference as the prop.
+    // Putting this logic in the parent is worth a shot.
+    const conf = this.state.config;
+    return edges.reduce((arr, curr) => {
+      const source = [curr.sourceNode.x + (conf.nodeWidth / 2), curr.sourceNode.y + (conf.nodeHeight / 2)];
+      const target = [curr.targetNode.x + (conf.nodeWidth / 2), curr.targetNode.y + (conf.nodeHeight / 2)];
+      const id = `${curr.sourceNode.id}_${curr.targetNode.id}_edge`;
+      const attributes = { ...curr.attributes, sourceNode: curr.sourceNode.id, targetNode: curr.targetNode.id };
+      arr.push({ source, target, id, attributes, sourceNode: curr.sourceNode, targetNode: curr.targetNode });
+      return arr;
+    }, []);
   }
 
   saveGraph() {
@@ -53,8 +83,8 @@ export class Graphik extends Component {
     };
 
     data.edges.forEach(edge => {
-      edge.source = edge.source.id;
-      edge.target = edge.target.id;
+      edge.sourceNode = edge.sourceNode.id;
+      edge.targetNode = edge.targetNode.id;
       delete edge.index;
     });
 
@@ -74,12 +104,12 @@ export class Graphik extends Component {
   }
 
   mapNodesToEdge(edge) {
-    const sourceNode = this.props.data.nodes.filter(node => node.id === edge.source);
-    const targetNode = this.props.data.nodes.filter(node => node.id === edge.target);
+    const sourceNode = this.state.nodes.filter(node => node.id === (edge.sourceNode.id ? edge.sourceNode.id : edge.sourceNode));
+    const targetNode = this.state.nodes.filter(node => node.id === (edge.targetNode.id ? edge.targetNode.id : edge.targetNode));
     // Add error handling for if a node is not found
 
-    edge.source = sourceNode[0];
-    edge.target = targetNode[0];
+    edge.sourceNode = sourceNode[0];
+    edge.targetNode = targetNode[0];
   }
 
   removeNode(d, e) {
@@ -87,7 +117,7 @@ export class Graphik extends Component {
       return node.id !== d.id;
     });
     const tempEdges = this.state.edges.filter(edge => {
-      return (edge.source.id !== d.id && edge.target.id !== d.id);
+      return (edge.sourceNode.id !== d.id && edge.targetNode.id !== d.id);
     });
 
     this.setState({
@@ -109,9 +139,10 @@ export class Graphik extends Component {
     this.setState({ showAddNodeModal: false });
   }
 
-  addNewNode(id, x, y) {
+  addNewNode(id, name, x, y) {
     const newNode = {
       id,
+      name,
       x,
       y
     };
@@ -138,12 +169,28 @@ export class Graphik extends Component {
     });
   }
 
+  removeEdge(edge) {
+    const newEdges = this.state.edges.filter(e => !(e.sourceNode.id === edge.attributes.sourceNode && e.targetNode.id === edge.attributes.targetNode));
+    this.setState({
+      edges: newEdges
+    });
+  }
+
+  callRerender() {
+    console.log('called rerender');
+    console.log(this.state);
+
+    this.forceUpdate();
+  }
+
   render() {
+    console.log('GRAPHIX Rerender');
+    console.log(this.state);
     return (
       <div id='svgContainer' className={styles.svgContainer}>
-        <button onClick={this.saveGraph} className={styles.saveButton}>
+        <Button size='sm' onClick={this.saveGraph} variant='info' style={{ position: 'absolute', margin: '2%' }}>
           Save
-        </button>
+        </Button>
         {/* Using key here is to remount every time, but this could be made better... */}
         <Graph key={Date.now()} {...this.state} />
         <AddNodeModal

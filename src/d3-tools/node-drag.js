@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 
 let node;
 let prevClass;
+
 function dragStarted (event) {
   node = getNodeFromEvent(event);
   prevClass = node.getAttribute('class');

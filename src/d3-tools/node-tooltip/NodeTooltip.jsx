@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { Button, Card, Fade, ButtonToolbar } from 'react-bootstrap';
 import NodeAttributes from './NodeAttributes';
 import AddAttributeModal from './AddAttributeModal';
-import { cleanAttributes } from './utils';
+import { cleanNodeAttributes } from '../utils';
 /* eslint-disable react/jsx-closing-tag-location */
 
 let prevClass = null;
@@ -14,24 +14,34 @@ const cardStyles = {
   card: {
     position: 'absolute',
     right: '5%',
-    width: '20%',
+    width: '26%',
     marginTop: '3%',
     maxHeight: '70%'
   },
-
   body: {
-    overflowY: 'scroll'
+    overflowY: 'scroll',
+    paddingTop: '6px',
+    paddingBottom: '3px'
+
   },
-  buttonToolbar: {
+  buttonToolbarNonEditMode: {
     justifyContent: 'flex-end'
+  },
+  buttonToolbarEditMode: {
+    justifyContent: 'space-between',
+    alignContent: 'center'
   },
   button: {
     margin: '0.25rem'
+  },
+  footer: {
+    paddingTop: '3px',
+    paddingBottom: '3px'
   }
 
 };
 
-export default class Tooltip extends Component {
+export default class NodeTooltip extends Component {
   constructor(props) {
     super(props);
 
@@ -55,7 +65,7 @@ export default class Tooltip extends Component {
   // is only confirmed when the user clicks save.
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.selectedNode !== prevState.selectedNode && nextProps.selectedNode !== null) {
-      const attributes = cleanAttributes(_.cloneDeep(nextProps.selectedNode.__data__));
+      const attributes = cleanNodeAttributes(_.cloneDeep(nextProps.selectedNode.__data__));
       return {
         attributes,
         selectedNode: nextProps.selectedNode
@@ -93,11 +103,12 @@ export default class Tooltip extends Component {
 
   handleSaveButtonClick() {
     for (const k in this.state.attributes) {
-      if (this.state.attributes[k]) {
-        this.props.selectedNode.__data__[k] = this.state.attributes[k];
-      }
+      if (this.state.attributes[k] === null) {
+        delete this.props.selectedNode.__data__[k];
+      } else this.props.selectedNode.__data__[k] = this.state.attributes[k];
     }
     this.toggleEditMode();
+    this.props.reRender();
   }
 
   handleAddButtonClick() {
@@ -120,6 +131,8 @@ export default class Tooltip extends Component {
   }
 
   displayTooltip() {
+    const filteredAttrs = Object.fromEntries(Object.entries(this.state.attributes).filter(([k, v]) => v !== null));
+
     return (
       <Card style={cardStyles.card}>
         <Card.Header as='h5'>
@@ -130,9 +143,9 @@ export default class Tooltip extends Component {
           </Button>
         </Card.Header>
         <Card.Body style={cardStyles.body}>
-          <NodeAttributes attributes={this.state.attributes} editMode={this.state.editMode} updateValues={this.updateAttributeValues} />
+          <NodeAttributes attributes={filteredAttrs} editMode={this.state.editMode} updateValues={this.updateAttributeValues} />
         </Card.Body>
-        <Card.Footer>
+        <Card.Footer style={cardStyles.footer}>
           {this.createTooltipButtons()}
         </Card.Footer>
       </Card>
@@ -149,21 +162,20 @@ export default class Tooltip extends Component {
     return (
       <div style={{ paddingTop: '5px' }}>
         {!this.state.editMode
-          ? <ButtonToolbar style={cardStyles.buttonToolbar}>
+          ? <ButtonToolbar style={cardStyles.buttonToolbarNonEditMode}>
             <Button style={cardStyles.button} onClick={this.toggleEditMode} size='sm' variant='info'>
               Edit
             </Button>
           </ButtonToolbar>
-          : <ButtonToolbar style={cardStyles.buttonToolbar}>
-            <Button style={cardStyles.button} onClick={this.closeTooltip} size='sm' variant='info'>
-              Cancel
+          : <ButtonToolbar style={cardStyles.buttonToolbarEditMode}>
+            <Button style={cardStyles.button} onClick={this.handleAddButtonClick} size='sm' variant='info'>
+              Add
             </Button>
-
             <Button style={cardStyles.button} onClick={this.handleSaveButtonClick} size='sm' variant='info'>
               Save
             </Button>
-            <Button style={cardStyles.button} onClick={this.handleAddButtonClick} size='sm' variant='info'>
-              Add
+            <Button style={cardStyles.button} onClick={this.closeTooltip} size='sm' variant='secondary'>
+              Cancel
             </Button>
           </ButtonToolbar>}
       </div>

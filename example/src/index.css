@@ -3,29 +3,27 @@ body {
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Segoe UI';
 }
+
+
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-.node {
-  stroke: orange
+  font-family: 'Segoe UI';
 }
 
 .node-dragging {
-	stroke: red
+	stroke: rgb(194, 106, 106)
 }
 
 .node-selected {
 	stroke: greenyellow
 }
 
-.btn-primary {
-	background-color:greenyellow
+.edge-selected { 
+	stroke: greenyellow
 }
+
 
 /* width */
 ::-webkit-scrollbar {
@@ -191,3 +189,4 @@ code {
 .d3-context-menu-theme li.is-parent:hover > ul.is-children {
 	display: block;
 }
+

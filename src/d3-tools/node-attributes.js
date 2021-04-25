@@ -1,15 +1,15 @@
 function addDefaultNodeAttributes(el, props) {
   el.attrs({
-    id: d => d.id,
-    height: props.nodeWidth,
-    width: props.nodeHeight,
-    rx: '10',
-    fill: d => d.fill ? d.fill : '#6fa6de',
+    id: d => `node_${d.id}`,
+    height: props.config.nodeWidth,
+    width: props.config.nodeWidth,
+    rx: props.config.nodeRx,
     class: 'node',
-    stroke: 'black'
-    // x: props.x ? props.x : 100,
-    // y: props.y ? props.y : 100
+    stroke: d => d.stroke ? d.stroke : props.config.nodeStroke,
+    fill: d => d.fill ? d.fill : props.config.nodeColour
   });
+  // el.style('fill', d => d.fill ? d.fill : null);
+  // el.style('stroke', d => d.stroke ? d.stroke : null);
 }
 
 export { addDefaultNodeAttributes };
