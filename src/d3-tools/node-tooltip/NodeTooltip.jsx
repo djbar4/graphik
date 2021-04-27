@@ -143,7 +143,7 @@ export default class NodeTooltip extends Component {
           </Button>
         </Card.Header>
         <Card.Body style={cardStyles.body}>
-          <NodeAttributes attributes={filteredAttrs} editMode={this.state.editMode} updateValues={this.updateAttributeValues} />
+          <NodeAttributes attributes={filteredAttrs} editMode={this.state.editMode} updateValues={this.updateAttributeValues} keyId={filteredAttrs.id} />
         </Card.Body>
         <Card.Footer style={cardStyles.footer}>
           {this.createTooltipButtons()}

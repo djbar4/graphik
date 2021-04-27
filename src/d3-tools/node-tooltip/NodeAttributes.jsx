@@ -25,10 +25,11 @@ export default class NodeAttributes extends Component {
 
   render() {
     const attributeNames = Object.keys(this.props.attributes);
+
     return (
       <Form>
         {attributeNames.map(k => ( // Having the key include the props.attribute.id means that changing ID value is not fluid
-          <Form.Group style={{ fontSize: '0.7rem', alignItems: 'flex-end' }} key={`${k}_${this.props.attributes.id}`} as={Row} controlId='formPlaintextPassword' attribute={k}>
+          <Form.Group style={{ fontSize: '0.7rem', alignItems: 'flex-end' }} key={`${k}_${this.props.keyId}`} as={Row} controlId='formPlaintextPassword' attribute={k}>
             <Form.Label style={{ margin: 0, fontWeight: 600 }}>
               {k}
             </Form.Label>

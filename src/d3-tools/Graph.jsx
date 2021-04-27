@@ -63,7 +63,8 @@ class Graph extends Component {
       showNodeTooltip: false,
       showEdgeTooltip: false,
       selectedNode: null,
-      selectedEdge: null
+      selectedEdge: null,
+      originEdgeRef: null
     };
   }
 
@@ -115,11 +116,9 @@ class Graph extends Component {
   }
 
   calculateLinks() {
-    console.log('this.props.edges');
-    console.log(this.props.edges);
-
     // A new variable is made here, so it is not longer the same reference as the prop.
     // Putting this logic in the parent is worth a shot.
+    // The shot..... Was worth it, but didn't pay off. I think just display the text that is given by the user for now.....
     this.calcEdges = this.props.edges.reduce((arr, curr) => {
       const source = [curr.source.x + (this.props.config.nodeWidth / 2), curr.source.y + (this.props.config.nodeHeight / 2)];
       const target = [curr.target.x + (this.props.config.nodeWidth / 2), curr.target.y + (this.props.config.nodeHeight / 2)];
@@ -131,19 +130,36 @@ class Graph extends Component {
   }
 
   renderLinks() {
-    this.lines = this.graphContainer.selectAll('path')
+    this.lines = this.graphContainer.selectAll('g.path-group>path')
       .data(this.calcEdges);
 
-    this.lines.enter().append('path')
+    const pathGroup = this.lines.enter()
+      .append('g')
+      .attr('class', 'path-group');
+
+    pathGroup.append('path')
       .merge(this.lines)
       .attrs({
+        id: d => d.id,
         class: 'edge',
         fill: 'none',
-        stroke: 'black',
+        stroke: d => d.attributes.stroke ? d.attributes.stroke : this.props.config.edgeStroke,
         'stroke-width': 2,
         oppacity: 0,
         d: linkGen
       });
+
+    pathGroup.append('text')
+      .style('fill', d => d.attributes.fontColour ? d.attributes.fontColour : this.props.config.edgeFontColour)
+      .style('font-weight', 100)
+      .style('font-size', '0.65rem')
+      .append('textPath')
+      .data(this.calcEdges)
+      .attr('class', 'text-paths')
+      .attr('href', d => `#${d.id}`)
+      .attr('startOffset', '50%')
+      .html(d => d.attributes.text);
+
     setEdgeContextMenuEvent(this.lines, this.edgeContextMenu);
     setEdgeClick(this.lines, this.turnEdgeTooltipOn);
   }
@@ -197,6 +213,9 @@ class Graph extends Component {
   }
 
   turnNodeTooltipOn(event) {
+    if (this.state.showEdgeTooltip) {
+      this.turnEdgeTooltipOff();
+    }
     this.setState((state) => {
       return {
         showNodeTooltip: state.showNodeTooltip ? event.target !== state.selectedNode : true,
@@ -214,12 +233,19 @@ class Graph extends Component {
   }
 
   turnEdgeTooltipOn(event) {
-    console.log(event.target);
-    console.log(this.state);
+    if (this.state.showNodeTooltip) {
+      this.turnNodeTooltipOff();
+    }
+    const selectedEdge = event.target;
+    const originEdgeRef = this.props.edges.filter(e =>
+      e.source.id === selectedEdge.__data__.attributes.sourceNode &&
+      e.target.id === selectedEdge.__data__.attributes.targetNode)[0];
+
     this.setState((state) => {
       return {
-        showEdgeTooltip: state.showEdgeTooltip ? event.target !== state.selectedEdge : true,
-        selectedEdge: event.target
+        showEdgeTooltip: state.showEdgeTooltip ? selectedEdge !== state.selectedEdge : true,
+        selectedEdge,
+        originEdgeRef
       };
     });
   }
@@ -228,7 +254,8 @@ class Graph extends Component {
   turnEdgeTooltipOff() {
     this.setState({
       showEdgeTooltip: false,
-      selectedEdge: null
+      selectedEdge: null,
+      originEdgeRef: null
     });
   }
 
@@ -289,14 +316,33 @@ class Graph extends Component {
     this.calculateLinks();
     this.renderLinks();
     this.texts.raise();
+
+    // This part makes the text change sides when dragging nodes around.
+    this.graphContainer.selectAll('.text-paths')
+      .data(this.calcEdges)
+      .attr('side', d => {
+        const x = d.source[0] - d.target[0];
+        return x >= '0' ? 'right' : 'left';
+      });
   }
 
   render() {
     console.log('🚀 ~ Graph.jsx Rendered');
     return (
       <div ref={this.containerRefs}>
-        <NodeTooltip show={this.state.showNodeTooltip} turnOff={this.turnNodeTooltipOff} selectedNode={this.state.selectedNode} reRender={this.props.callRerender} />
-        <EdgeTooltip show={this.state.showEdgeTooltip} turnOff={this.turnEdgeTooltipOff} selectedEdge={this.state.selectedEdge} reRender={this.props.callRerender} />
+        <NodeTooltip
+          show={this.state.showNodeTooltip}
+          turnOff={this.turnNodeTooltipOff}
+          selectedNode={this.state.selectedNode}
+          reRender={this.props.callRerender}
+        />
+        <EdgeTooltip
+          show={this.state.showEdgeTooltip}
+          turnOff={this.turnEdgeTooltipOff}
+          selectedEdge={this.state.selectedEdge}
+          originEdgeRef={this.state.originEdgeRef}
+          reRender={this.props.callRerender}
+        />
         <svg className='canvas' width={this.props.config.svgCanvasWidth} height={this.props.config.svgCanvasHeight}>
           <rect className='background' width='100%' height='100%' fill={this.props.config.svgCanvasBackgroundColour} />
           <g className='graph' />

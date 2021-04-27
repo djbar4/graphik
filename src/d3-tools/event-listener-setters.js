@@ -25,7 +25,6 @@ function setNodeClick(nodes, isEdgeBeingCreated, setIsEdgeBeingCreated, turnNode
 
 function setEdgeClick(edges, turnEdgeTooltipOn) {
   edges.on('click', (e) => {
-    console.log('edge clicked');
     turnEdgeTooltipOn(e);
   });
 }

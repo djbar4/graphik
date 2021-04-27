@@ -4,6 +4,7 @@ import _ from 'lodash';
 
 import { Button, Card, Fade, ButtonToolbar } from 'react-bootstrap';
 import NodeAttributes from '../node-tooltip/NodeAttributes';
+import AddAtributeModal from '../node-tooltip/AddAttributeModal';
 
 /* eslint-disable react/jsx-closing-tag-location */
 
@@ -47,7 +48,7 @@ export default class EdgeTooltip extends Component {
     this.toggleEditMode = this.toggleEditMode.bind(this);
     this.handleSaveButtonClick = this.handleSaveButtonClick.bind(this);
     this.handleAddButtonClick = this.handleAddButtonClick.bind(this);
-    // this.handleModalClose = this.handleModalClose.bind(this);
+    this.handleModalClose = this.handleModalClose.bind(this);
     this.updateAttributeValues = this.updateAttributeValues.bind(this);
     this.closeTooltip = this.closeTooltip.bind(this);
 
@@ -62,6 +63,8 @@ export default class EdgeTooltip extends Component {
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.selectedEdge !== prevState.selectedEdge && nextProps.selectedEdge !== null) {
       const attributes = _.cloneDeep(nextProps.selectedEdge.__data__.attributes);
+      console.log('🚀 ~ attributes', attributes);
+
       return {
         attributes,
         selectedEdge: nextProps.selectedEdge
@@ -93,7 +96,6 @@ export default class EdgeTooltip extends Component {
   }
 
   toggleEdgeHighlight(edge, highlight) {
-    console.log(highlight);
     const _class = highlight ? 'edge-selected' : prevClass;
     d3.select(edge).attr('class', _class);
   }
@@ -106,17 +108,12 @@ export default class EdgeTooltip extends Component {
 
   handleSaveButtonClick() {
     console.log('saved');
-    console.log(this.props.selectedEdge.__data__.attributes);
-    console.log(this.state.attributes);
     for (const k in this.state.attributes) {
       if (this.state.attributes[k] === null) {
-        delete this.props.selectedEdge.__data__.attributes[k];
-      } else this.props.selectedEdge.__data__.attributes[k] = this.state.attributes[k];
+        delete this.props.originEdgeRef.attributes[k];
+      } else this.props.originEdgeRef.attributes[k] = this.state.attributes[k];
     }
     this.toggleEditMode();
-    console.log('this.props.selectedEdge.__data__.attributes');
-
-    console.log(this.props.selectedEdge.__data__.attributes);
     this.props.reRender();
   }
 
@@ -129,9 +126,12 @@ export default class EdgeTooltip extends Component {
     this.props.turnOff();
   }
 
+  handleModalClose() {
+    this.setState({ showModal: false });
+  }
+
   displayTooltip() {
     const filteredAttrs = Object.fromEntries(Object.entries(this.state.attributes).filter(([k, v]) => v !== null));
-
     return (
       <Card style={cardStyles.card}>
         <Card.Header as='h5'>
@@ -142,7 +142,7 @@ export default class EdgeTooltip extends Component {
           </Button>
         </Card.Header>
         <Card.Body style={cardStyles.body}>
-          <NodeAttributes attributes={filteredAttrs} editMode={this.state.editMode} updateValues={this.updateAttributeValues} />
+          <NodeAttributes attributes={filteredAttrs} editMode={this.state.editMode} updateValues={this.updateAttributeValues} keyId={this.props.selectedEdge.getAttribute('id')} />
         </Card.Body>
         <Card.Footer style={cardStyles.footer}>
           {this.createTooltipButtons()}
@@ -151,11 +151,11 @@ export default class EdgeTooltip extends Component {
     );
   }
 
-  //   displayModal() {
-  //     return (
-  //       <AddAttributeModal show={this.state.showModal} handleClose={this.handleModalClose} addAttribute={this.updateAttributeValues} />
-  //     );
-  //   }
+  displayModal() {
+    return (
+      <AddAtributeModal show={this.state.showModal} handleClose={this.handleModalClose} addAttribute={this.updateAttributeValues} />
+    );
+  }
 
   createTooltipButtons() {
     return (
@@ -182,11 +182,13 @@ export default class EdgeTooltip extends Component {
   }
 
   render() {
+    console.log('edge rendering');
+    console.log(this.props);
     return (
       <Fade in={this.props.show}>
         <div id='tooltip'>
           {this.props.selectedEdge ? this.displayTooltip() : null}
-          {/* {this.displayModal()} */}
+          {this.displayModal()}
         </div>
       </Fade>
     );

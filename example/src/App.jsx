@@ -6,6 +6,7 @@ import 'graphik/dist/index.css'
 
 import harryPotterData from './resources/harry_potter.json';
 import orgStructureData from './resources/savedData.json';
+import companyData from './resources/companies.json';
 
 import data from './resources/savedDataRemovedNode.json';
 
@@ -43,7 +44,9 @@ const orgStructureConfig = {
   svgCanvasWidth: 1032,
   svgCanvasHeight: 594,
   svgCanvasBackgroundColour: '#383838',
-  nodeFontColour: 'white'
+  nodeFontColour: 'white',
+  edgeStroke: 'black',
+  edgeFontColour: 'white'
 }
 
 const harryPotterConfig = {
@@ -55,8 +58,24 @@ const harryPotterConfig = {
   svgCanvasWidth: 1032,
   svgCanvasHeight: 594,
   svgCanvasBackgroundColour: '#383838',
-  nodeFontColour: 'white'
+  nodeFontColour: 'white',
+  edgeStroke: 'black',
+  edgeFontColour: 'white'
   // svgCanvasBackgroundColour: '#ffe2c9'
+}
+
+const companiesConfig = {
+  nodeWidth: 60,
+  nodeHeight: 60,
+  nodeRx: 10,
+  nodeColour: '#212121',
+  nodeStroke: 'black',
+  svgCanvasWidth: 1032,
+  svgCanvasHeight: 594,
+  svgCanvasBackgroundColour: '#3b547d',
+  nodeFontColour: 'white',
+  edgeStroke: 'black',
+  edgeFontColour: 'white'
 }
 
 
@@ -114,9 +133,9 @@ export default class App extends Component {
           <Row noGutters>
           <Col xs={2} style={{backgroundColor: '#212121', borderRight: '2px solid #868686'}}>
             <Nav  className="flex-column">
-              <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(orgStructureData, orgStructureConfig, 'org')} eventKey="link-1">Org Structure</Nav.Link>
-              <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(harryPotterData, harryPotterConfig, 'harry')} eventKey="link-0" >Harry Potter</Nav.Link>
-              <Nav.Link style={{color: '#63cee6'}} eventKey="link-2">Link</Nav.Link>
+              <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(orgStructureData, orgStructureConfig, 'org')} eventKey="link-0">Org Structure</Nav.Link>
+              <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(harryPotterData, harryPotterConfig, 'harry')} eventKey="link-1" >Harry Potter</Nav.Link>
+              <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(companyData, companiesConfig, 'companies')} eventKey="link-2" >Companies</Nav.Link>
             </Nav>
               </Col>
               <Col xs={10}>

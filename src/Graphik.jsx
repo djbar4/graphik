@@ -83,6 +83,7 @@ export class Graphik extends Component {
   mapNodesToEdges() {
     this.props.data.edges.forEach(edge => {
       this.mapNodesToEdge(edge);
+      edge.attributes = edge.attributes ? edge.attributes : {};
     });
   }
 
@@ -141,7 +142,8 @@ export class Graphik extends Component {
     // Add logic to check if edge already exists between nodes or if node is itself
     const newEdge = {
       source,
-      target
+      target,
+      attributes: {}
     };
 
     const tempEdges = this.state.edges;
