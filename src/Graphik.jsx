@@ -7,9 +7,17 @@ import AddNodeModal from './d3-tools/AddNodeModal';
 // Add a save button.
 
 const config = {
-  nodeWidth: 50,
-  nodeHeight: 50,
-  nodeRx: 10
+  nodeWidth: 60,
+  nodeHeight: 60,
+  nodeRx: 10,
+  nodeColour: '#212121',
+  nodeStroke: '#65d3ec',
+  svgCanvasWidth: 1032,
+  svgCanvasHeight: 594,
+  svgCanvasBackgroundColour: '#383838',
+  nodeFontColour: 'white',
+  edgeStroke: 'black',
+  edgeFontColour: 'white'
 
 };
 
@@ -29,7 +37,8 @@ export class Graphik extends Component {
     this.removeEdge = this.removeEdge.bind(this);
     this.callRerender = this.callRerender.bind(this);
 
-    this.mergeUserConfig(this.props.userConfig, config);
+    this.mergeUserConfig(this.props.userConfig ? this.props.userConfig : {}, config);
+
     this.state = {
       nodes: props.data.nodes,
       edges: props.data.edges,

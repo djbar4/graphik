@@ -7,8 +7,11 @@ import 'graphik/dist/index.css'
 import harryPotterData from './resources/harry_potter.json';
 import orgStructureData from './resources/savedData.json';
 import companyData from './resources/companies.json';
-
-import data from './resources/savedDataRemovedNode.json';
+import welcomeData from './resources/welcome.json';
+import coloursData from './resources/colours.json';
+import contextData from './resources/edges_and_contexts.json';
+import edgesData from './resources/edges.json';
+import endData from './resources/end.json';
 
 
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -17,7 +20,6 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import gif from './resources/react-gif.gif'
 import { Col, Row } from 'react-bootstrap';
-import { RiHomeWifiLine } from 'react-icons/ri';
 
 
 
@@ -35,8 +37,8 @@ const footerCss = {
 }
 
 
-const orgStructureConfig = {
-  nodeWidth: 60,
+const defaultConfig = {
+  nodeWidth: 90,
   nodeHeight: 60,
   nodeRx: 10,
   nodeColour: '#212121',
@@ -48,6 +50,7 @@ const orgStructureConfig = {
   edgeStroke: 'black',
   edgeFontColour: 'white'
 }
+
 
 const harryPotterConfig = {
   nodeWidth: 60,
@@ -97,9 +100,9 @@ export default class App extends Component {
     this.changePage = this.changePage.bind(this);
     
     this.state = {
-      data: orgStructureData,
-      config: orgStructureConfig,
-      key: 'org'
+      data: welcomeData,
+      config: defaultConfig,
+      key: 'welcome'
     };
   }
 
@@ -133,9 +136,15 @@ export default class App extends Component {
           <Row noGutters>
           <Col xs={2} style={{backgroundColor: '#212121', borderRight: '2px solid #868686'}}>
             <Nav  className="flex-column">
-              <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(orgStructureData, orgStructureConfig, 'org')} eventKey="link-0">Org Structure</Nav.Link>
-              <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(harryPotterData, harryPotterConfig, 'harry')} eventKey="link-1" >Harry Potter</Nav.Link>
+              <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(welcomeData, defaultConfig, 'welcome')} eventKey="welcome">Welcome!</Nav.Link>
+              <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(coloursData, defaultConfig, 'colours')} eventKey="colours">Nodes</Nav.Link>
+              <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(contextData, defaultConfig, 'contexts')} eventKey="contexts">Context Menus</Nav.Link>
+              <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(edgesData, defaultConfig, 'edges')} eventKey="edges">Edges</Nav.Link>
+
+              <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(harryPotterData, defaultConfig, 'harry')} eventKey="link-1" >Harry Potter</Nav.Link>
               <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(companyData, companiesConfig, 'companies')} eventKey="link-2" >Companies</Nav.Link>
+              <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(endData, defaultConfig, 'end')} eventKey="end" >End</Nav.Link>
+
             </Nav>
               </Col>
               <Col xs={10}>

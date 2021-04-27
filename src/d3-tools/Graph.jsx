@@ -307,11 +307,11 @@ class Graph extends Component {
     });
 
     this.texts.attrs({
-      x: d => d.x + (this.props.config.nodeHeight / 2),
+      x: d => d.x + (this.props.config.nodeWidth / 2),
       y: d => d.y + (this.props.config.nodeHeight / 2)
     });
 
-    this.texts.selectAll('tspan').attr('x', d => d.x + (this.props.config.nodeHeight / 2));
+    this.texts.selectAll('tspan').attr('x', d => d.x + (this.props.config.nodeWidth / 2));
 
     this.calculateLinks();
     this.renderLinks();

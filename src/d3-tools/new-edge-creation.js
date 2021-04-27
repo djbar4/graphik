@@ -41,7 +41,7 @@ function endNewEdgeCreation(e, el, addNewEdge) {
 
   if (e.target.parentElement.getAttribute('class') === 'nodeGroup') {
     targetNodeId = e.target.getAttribute('id');
-    addNewEdge(srcNodeId.split('_')[1], targetNodeId.split('_')[1]);
+    addNewEdge(srcNodeId.split('__')[1], targetNodeId.split('__')[1]);
   }
 }
 
