@@ -11,7 +11,7 @@ Demo will be visible on url http://localhost:3000/
 ## Install
 
 ```bash
-npm install --save graphik
+npm install --save graphix
 ```
 
 ## Usage
