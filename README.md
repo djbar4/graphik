@@ -1,8 +1,12 @@
-# graphik
+# Running Demo
 
-> Network graph visualisation library
+Run the `npm install` command in both the root directory and /example directory.
 
-[![NPM](https://img.shields.io/npm/v/graphik.svg)](https://www.npmjs.com/package/graphik) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+Then using 2 separate terminals, run `npm run start` in both root directory and /example directory.
+
+Demo will be visible on url http://localhost:3000/
+
+# Integrating into your library
 
 ## Install
 
@@ -15,12 +19,13 @@ npm install --save graphik
 ```jsx
 import React, { Component } from 'react'
 
-import MyComponent from 'graphik'
-import 'graphik/dist/index.css'
+import Graphix from 'graphix'
+import 'graphix/dist/index.css'
 
 class Example extends Component {
   render() {
-    return <MyComponent />
+    return <Graphix 
+      data={{nodes: [{"id": "Foo", "name": "Bar"}]}}/>
   }
 }
 ```

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
-import { addDefaultNodeAttributes } from './node-attributes';
+import { addDefaultNodeAttributes as addNodeAttributes } from './node-attributes';
 
 import NodeTooltip from './node-tooltip/NodeTooltip';
 import EdgeTooltip from './edge-tooltip/EdgeTooltip';
@@ -10,8 +10,9 @@ import { setCanvasReference, setGraphContainerReference, setSvgBackgroundReferen
 import { setContainerContextMenuEvent, setEdgeClick, setEdgeContextMenuEvent, setNodeClick, setNodeContextMenuEvent } from './event-listener-setters';
 import { endNewEdgeCreation, moveNewEdge, startNewEdgeCreation } from './new-edge-creation';
 
+/* eslint-disable no-multi-spaces */
+
 const simulation = d3.forceSimulation().alpha(0);
-const linkGen = d3.linkVertical();
 
 let isEdgeBeingCreated = false;
 
@@ -19,7 +20,10 @@ class Graph extends Component {
   constructor(props) {
     super(props);
 
+    // Creates a reference object which can be assigned to an element.
+    // This element can then be access by D3 in other parts of the code.
     this.containerRefs = React.createRef();
+
     this.forceTick = this.forceTick.bind(this);
     this.turnNodeTooltipOn = this.turnNodeTooltipOn.bind(this);
     this.turnNodeTooltipOff = this.turnNodeTooltipOff.bind(this);
@@ -27,37 +31,38 @@ class Graph extends Component {
     this.turnEdgeTooltipOn = this.turnEdgeTooltipOn.bind(this);
     this.turnEdgeTooltipOff = this.turnEdgeTooltipOff.bind(this);
 
-    this.createNewLine = this.createNewLine.bind(this);
+    this.createNewEdge = this.createNewEdge.bind(this);
     this.getIsEdgeBeingCreated = this.getIsEdgeBeingCreated.bind(this);
     this.setIsEdgeBeingCreated = this.setIsEdgeBeingCreated.bind(this);
     this.zoomed = this.zoomed.bind(this);
 
     simulation.on('tick', this.forceTick);
 
-    this.nodeContextMenu = [
-      {
-        title: 'Remove Node',
-        action: this.props.removeNode
-      },
-      {
-        title: 'Create Edge',
-        action: this.createNewLine
-      }
-    ];
-
-    this.backgroundContextMenu = [
-      {
-        title: 'Add Node',
-        action: this.props.addNode
-      }
-    ];
-
-    this.edgeContextMenu = [
-      {
-        title: 'Remove Edge',
-        action: this.props.removeEdge
-      }
-    ];
+    // Context menus with options for when different parts of the graph are right clicked.
+    this.contextMenus = {
+      nodeContextMenu: [
+        {
+          title: 'Remove Node',
+          action: this.props.removeNode
+        },
+        {
+          title: 'Create Edge',
+          action: this.createNewEdge
+        }
+      ],
+      backgroundContextMenu: [
+        {
+          title: 'Add Node',
+          action: this.props.addNode
+        }
+      ],
+      edgeContextMenu: [
+        {
+          title: 'Remove Edge',
+          action: this.props.removeEdge
+        }
+      ]
+    };
 
     this.state = {
       showNodeTooltip: false,
@@ -69,21 +74,27 @@ class Graph extends Component {
   }
 
   componentDidMount() {
+    // Below functions assign different SVG elements on the screen to variables for
+    // ease of accessibility in other parts of the code
     this.parentSvg = setCanvasReference(this.containerRefs.current);
     this.graphContainer = setGraphContainerReference(this.containerRefs.current);
     this.svgContainer = setSvgBackgroundReference(this.containerRefs.current);
 
-    setContainerContextMenuEvent(this.svgContainer, this.backgroundContextMenu);
-    // setContainerClickEvent(this.svgContainer, isEdgeBeingCreated, this.parentSvg);
-    // this.svgBackground.on('contextmenu', d3ContextMenu(this.backgroundContextMenu));
+    // Sets context menu to appear when right clicking on graph background
+    setContainerContextMenuEvent(this.svgContainer, this.contextMenus.backgroundContextMenu);
 
-    this.calculateLinks();
-    this.renderLinks();
+    // Different parts of the graph are rendered one after another.
+    this.calculateEdges();
+    this.renderEdges();
     this.renderNodes();
-    this.renderTexts();
+    this.renderNodeTexts();
     this.calculateTextWidth();
-    this.setSimulation();
+
+    // Sets zoom in and out functionality when using scroll wheel
     this.setZoom();
+
+    // Needs to be called in order to render graph in correct position
+    this.forceTick();
   }
 
   setZoom() {
@@ -98,28 +109,19 @@ class Graph extends Component {
   }
 
   componentDidUpdate() {
-    this.calculateLinks();
-    this.renderLinks();
+    this.calculateEdges();
+    this.renderEdges();
     this.renderNodes();
-    // These 2 are only here for when adding nodes, not very efficient...
-    // if (this.props.nodes.length !== this.nodes.length) {
-    // this.renderTexts();
-    this.setSimulation();
     this.forceTick();
-    // }
   }
 
-  setSimulation() {
-    simulation.nodes(this.props.nodes)
-      .force('link', d3.forceLink(this.props.edges).id(d => d.id))
-      .restart();
-  }
-
-  calculateLinks() {
-    // A new variable is made here, so it is not longer the same reference as the prop.
-    // Putting this logic in the parent is worth a shot.
-    // The shot..... Was worth it, but didn't pay off. I think just display the text that is given by the user for now.....
+  /*
+  - Changes the shape of the edges objects so that it can be read by the d3 linking function used when rendering edges.
+  - Specifically the 'source' and 'target' values are required to be in the shape of [x, y] to determine how to draw the edge
+  */
+  calculateEdges() {
     this.calcEdges = this.props.edges.reduce((arr, curr) => {
+      // Uses source and target node positions, along with the size of the nodes to draw the edges between the centers of each node.
       const source = [curr.source.x + (this.props.config.nodeWidth / 2), curr.source.y + (this.props.config.nodeHeight / 2)];
       const target = [curr.target.x + (this.props.config.nodeWidth / 2), curr.target.y + (this.props.config.nodeHeight / 2)];
       const id = `${curr.source.id}_${curr.target.id}_edge`;
@@ -129,42 +131,63 @@ class Graph extends Component {
     }, []);
   }
 
-  renderLinks() {
-    this.lines = this.graphContainer.selectAll('g.path-group>path')
+  /*
+  - Renders the edges based on the source nodes x and y positions calculated in the calculateEdges function.
+  - The code below creates a new 'g' group element per edge create.
+  - Each of these groups contains:
+      - A 'path' element which renders the edge
+      - A 'textPath' element which renders any text (by default 'textPath' elements are rendered inside 'text' elements)
+  */
+  renderEdges() {
+    this.lines = this.graphContainer
+      .selectAll('g.path-group>path')
       .data(this.calcEdges);
 
-    const pathGroup = this.lines.enter()
+    const pathGroup = this.lines
+      .enter()
       .append('g')
       .attr('class', 'path-group');
 
-    pathGroup.append('path')
-      .merge(this.lines)
-      .attrs({
+    this.addPathElement(pathGroup);
+    this.addTextPathElement(pathGroup);
+
+    setEdgeContextMenuEvent(this.lines, this.contextMenus.edgeContextMenu);
+    setEdgeClick(this.lines, this.turnEdgeTooltipOn);
+  }
+
+  /*
+  - Adds a 'path' element to the a 'g' element passed in.
+  - TALK ABOUT PATH BEING A COMPLEX ELEMENT IN REPORT
+  */
+  addPathElement(pathGroup) {
+    pathGroup.append('path')  // Add 'path' element
+      .merge(this.lines)      // Determines if 'path' already exists inside group
+      .attrs({                // Assigns attributes to elements
         id: d => d.id,
         class: 'edge',
         fill: 'none',
         stroke: d => d.attributes.stroke ? d.attributes.stroke : this.props.config.edgeStroke,
         'stroke-width': 2,
         oppacity: 0,
-        d: linkGen
+        d: d3.linkVertical()  // Uses d3 library to assign data points to 'path' element
       });
+  }
 
+  addTextPathElement(pathGroup) {
     pathGroup.append('text')
       .style('fill', d => d.attributes.fontColour ? d.attributes.fontColour : this.props.config.edgeFontColour)
       .style('font-weight', 100)
       .style('font-size', '0.65rem')
+      .attr('dy', '-3px')
       .append('textPath')
       .data(this.calcEdges)
       .attr('class', 'text-paths')
       .attr('href', d => `#${d.id}`)
       .attr('startOffset', '50%')
       .html(d => d.attributes.text);
-
-    setEdgeContextMenuEvent(this.lines, this.edgeContextMenu);
-    setEdgeClick(this.lines, this.turnEdgeTooltipOn);
   }
 
-  createNewLine(d, ev) {
+  createNewEdge(d, ev) {
     isEdgeBeingCreated = true;
     startNewEdgeCreation(ev);
 
@@ -179,6 +202,10 @@ class Graph extends Component {
     });
   }
 
+  /*
+  - Renders each node by creating a 'g' group element similar to the creation of edges.
+  - Assigns event handlers for each each node for dragging and clicking on them.
+  */
   renderNodes() {
     this.nodeGroups = this.graphContainer.selectAll('g.nodeGroup').data(this.props.nodes, d => d.id);
 
@@ -191,16 +218,19 @@ class Graph extends Component {
       .attr('y', d => d.y)
       .append('rect');
 
-    addDefaultNodeAttributes(this.nodes, this.props);
+    addNodeAttributes(this.nodes, this.props);
 
+    // Adds event handler for dragging node.
     this.nodes.call(d3.drag()
       .on('start', dragFuncs.dragStarted)
       .on('drag', (event, d) => dragFuncs.dragged(event, d, simulation))
       .on('end', dragFuncs.dragEnded));
 
+    // Adds event handler for left and right clicking on a node
     setNodeClick(this.nodes, this.getIsEdgeBeingCreated, this.setIsEdgeBeingCreated, this.turnNodeTooltipOn, endNewEdgeCreation, this.parentSvg, this.props.addNewEdge);
-    setNodeContextMenuEvent(this.nodes, this.nodeContextMenu);
+    setNodeContextMenuEvent(this.nodes, this.contextMenus.nodeContextMenu);
 
+    // D3 logic for removing nodes from a graph if it receives less data when rerendered.
     this.nodeGroups.exit().remove();
   }
 
@@ -259,7 +289,8 @@ class Graph extends Component {
     });
   }
 
-  renderTexts() {
+  // Renders text inside the nodes by appending a 'text' element to each node group
+  renderNodeTexts() {
     this.texts = this.graphContainer.selectAll('.nodeGroup')
       .append('text')
       .attrs({
@@ -269,15 +300,25 @@ class Graph extends Component {
       })
       .attr('fill', d => d.fontColour ? d.fontColour : this.props.config.nodeFontColour);
 
+    this.splitNodesAcrossLines();
+  }
+
+  /*
+  - Splits the nodes across multiple lines by splitting the text into single words,
+  - rendering them one after another with a lower y position on the screen.
+  */
+  splitNodesAcrossLines() {
     this.props.nodes.forEach(node => {
       const textEl = d3.select(`text#text_${node.id}`);
       const xPos = textEl.node().getAttribute('x');
       const splitName = node.name.split(' ');
-      // console.log(splitName.length === 1);
       if (splitName.length > 1 && node.name.length > 7) {
         for (const wordIndex in splitName) {
           textEl.append('tspan').text(splitName[wordIndex])
-            .attr('dy', wordIndex === '0' ? `${-0.35 * (splitName.length - 1)}em` : '1.2em')
+            .attr('dy', wordIndex === '0'
+              ? `${-0.35 * (splitName.length - 1)}em`
+              : '1.2em'
+            )
             .attr('x', xPos);
         }
       } else {
@@ -286,6 +327,7 @@ class Graph extends Component {
     });
   }
 
+  // Changes the font size of the text based on the width of the node
   calculateTextWidth() {
     this.texts
       .attr('font-size', (d, i, els) => {
@@ -297,10 +339,11 @@ class Graph extends Component {
       });
   }
 
-  // Tick tock
+  /*
+  - Calls the function which is called everytime a node or edge is interacted with.
+  - This updates the nodes, texts, and edge positions by updating x and y positions and re-rendering the graph.
+  */
   forceTick() {
-    console.log('tiktok');
-
     this.nodes.attrs({
       x: d => d.x,
       y: d => d.y
@@ -311,13 +354,14 @@ class Graph extends Component {
       y: d => d.y + (this.props.config.nodeHeight / 2)
     });
 
-    this.texts.selectAll('tspan').attr('x', d => d.x + (this.props.config.nodeWidth / 2));
+    this.texts.selectAll('tspan')
+      .attr('x', d => d.x + (this.props.config.nodeWidth / 2));
 
-    this.calculateLinks();
-    this.renderLinks();
+    this.calculateEdges();
+    this.renderEdges();
     this.texts.raise();
 
-    // This part makes the text change sides when dragging nodes around.
+    // This part makes the text on an edge align correctly when dragging nodes around.
     this.graphContainer.selectAll('.text-paths')
       .data(this.calcEdges)
       .attr('side', d => {
@@ -327,9 +371,8 @@ class Graph extends Component {
   }
 
   render() {
-    console.log('🚀 ~ Graph.jsx Rendered');
     return (
-      <div ref={this.containerRefs}>
+      <div ref={this.containerRefs /* This creates the reference for D3 to access and manipulate svg object below */}>
         <NodeTooltip
           show={this.state.showNodeTooltip}
           turnOff={this.turnNodeTooltipOff}
@@ -344,6 +387,7 @@ class Graph extends Component {
           reRender={this.props.callRerender}
         />
         <svg className='canvas' width={this.props.config.svgCanvasWidth} height={this.props.config.svgCanvasHeight}>
+          {/* All D3 operation occur in this SVG. The 'rect' below is used to create the background colour */}
           <rect className='background' width='100%' height='100%' fill={this.props.config.svgCanvasBackgroundColour} />
           <g className='graph' />
         </svg>

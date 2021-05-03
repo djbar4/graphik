@@ -38,7 +38,7 @@ export default class NodeAttributes extends Component {
                 <RiDeleteBinFill color='red' size={12} />
               </Button> : null}
             {this.props.editMode && (k === 'fill' || k === 'stroke' || k === 'fontColour')
-              ? <div style={{ zoom: 0.63 }}><TwitterPicker width='auto' triangle='hide' color={this.props.attributes[k]} onChange={(col) => this.props.updateValues(k, col.hex)} /> </div>
+              ? <div style={{ zoom: 0.63 }}><TwitterPicker width='100' triangle='hide' color={this.props.attributes[k]} onChange={(col) => this.props.updateValues(k, col.hex)} /> </div>
               : <Form.Control style={{ fontSize: '0.7rem' }} size='sm' onChange={this.handleAttributeChange} readOnly={!this.props.editMode} defaultValue={this.props.attributes[k]} />}
           </Form.Group>
         ))}

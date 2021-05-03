@@ -13,16 +13,24 @@ code {
 }
 
 .node-dragging {
-	stroke: rgb(194, 106, 106)
+	stroke: rgb(194, 106, 106);
+	cursor: pointer;
+
 }
+
+.edge {
+	cursor: pointer;
+  }
+
+.node {
+	cursor: pointer;
+  }
 
 .node-selected {
-	stroke: greenyellow
+	stroke: greenyellow;
+	cursor: pointer;
 }
 
-.edge-selected { 
-	stroke: greenyellow
-}
 
 
 /* width */

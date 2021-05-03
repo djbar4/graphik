@@ -38,7 +38,6 @@ const cardStyles = {
     paddingTop: '3px',
     paddingBottom: '3px'
   }
-
 };
 
 export default class NodeTooltip extends Component {

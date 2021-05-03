@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Graphik } from 'graphik';
+import { Graphix } from 'graphik';
 import './index.css'
 
 import 'graphik/dist/index.css'
@@ -12,6 +12,7 @@ import coloursData from './resources/colours.json';
 import contextData from './resources/edges_and_contexts.json';
 import edgesData from './resources/edges.json';
 import endData from './resources/end.json';
+import plantData from './resources/plant.json';
 
 
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -52,19 +53,19 @@ const defaultConfig = {
 }
 
 
-const harryPotterConfig = {
+
+const nodesConfig = {
   nodeWidth: 60,
   nodeHeight: 60,
   nodeRx: 10,
   nodeColour: '#212121',
-  nodeStroke: '#65d3ec',
+  nodeStroke: 'green',
   svgCanvasWidth: 1032,
   svgCanvasHeight: 594,
-  svgCanvasBackgroundColour: '#383838',
+  svgCanvasBackgroundColour: '#020d21',
   nodeFontColour: 'white',
   edgeStroke: 'black',
   edgeFontColour: 'white'
-  // svgCanvasBackgroundColour: '#ffe2c9'
 }
 
 const companiesConfig = {
@@ -75,22 +76,37 @@ const companiesConfig = {
   nodeStroke: 'black',
   svgCanvasWidth: 1032,
   svgCanvasHeight: 594,
-  svgCanvasBackgroundColour: '#3b547d',
+  svgCanvasBackgroundColour: '#383838',
   nodeFontColour: 'white',
   edgeStroke: 'black',
   edgeFontColour: 'white'
 }
 
-
-const saveData = (data) => {
-  console.log("🚀 ~ data", data)
-  
-  var a = document.createElement("a");
-  var file = new Blob([JSON.stringify(data)], {type: 'application/json'});
-  a.href = URL.createObjectURL(file);
-  a.download = 'json.json';
-  a.click();
+const plantsConfig = {
+  nodeWidth: 30,
+  nodeHeight: 30,
+  nodeRx: 40,
+  nodeColour: '#e8e7df',
+  nodeStroke: 'black',
+  svgCanvasWidth: 1032,
+  svgCanvasHeight: 594,
+  svgCanvasBackgroundColour: '#e8e7df',
+  nodeFontColour: 'black',
+  edgeStroke: 'black',
+  edgeFontColour: 'black'
 }
+
+/*
+- Function which download a JSON version of the graph data on save.
+*/
+const saveData = (data) => {
+  const a = document.createElement("a");
+  const file = new Blob([JSON.stringify(data)], {type: 'application/json'});
+
+  a.href = URL.createObjectURL(file);
+  a.download = 'graphix_test_data.json';
+  a.click();
+};
 
 
 export default class App extends Component {
@@ -137,12 +153,14 @@ export default class App extends Component {
           <Col xs={2} style={{backgroundColor: '#212121', borderRight: '2px solid #868686'}}>
             <Nav  className="flex-column">
               <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(welcomeData, defaultConfig, 'welcome')} eventKey="welcome">Welcome!</Nav.Link>
-              <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(coloursData, defaultConfig, 'colours')} eventKey="colours">Nodes</Nav.Link>
+              <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(coloursData, nodesConfig, 'colours')} eventKey="colours">Nodes</Nav.Link>
               <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(contextData, defaultConfig, 'contexts')} eventKey="contexts">Context Menus</Nav.Link>
               <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(edgesData, defaultConfig, 'edges')} eventKey="edges">Edges</Nav.Link>
 
               <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(harryPotterData, defaultConfig, 'harry')} eventKey="link-1" >Harry Potter</Nav.Link>
               <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(companyData, companiesConfig, 'companies')} eventKey="link-2" >Companies</Nav.Link>
+              <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(plantData, plantsConfig, 'plants')} eventKey="link-2" >Biological</Nav.Link>
+
               <Nav.Link style={{color: '#63cee6'}} onSelect={() => this.changePage(endData, defaultConfig, 'end')} eventKey="end" >End</Nav.Link>
 
             </Nav>
@@ -151,8 +169,7 @@ export default class App extends Component {
               <CssBaseline />
 
               <Container component="main" style={{padding: 0}}>
-
-                <Graphik key={this.state.key} data={this.state.data} userConfig={this.state.config} externalSaveGraph={saveData} />
+                <Graphix key={this.state.key} data={this.state.data} userConfig={this.state.config} externalSaveGraph={saveData} />
               </Container>
               </Col>
           </Row>

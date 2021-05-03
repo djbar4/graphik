@@ -21,10 +21,8 @@ const config = {
 
 };
 
-export class Graphik extends Component {
+export class Graphix extends Component {
   constructor(props) {
-    console.log('constructin graphik');
-    console.log(props);
     super(props);
 
     this.mapNodesToEdge = this.mapNodesToEdge.bind(this);
@@ -55,6 +53,9 @@ export class Graphik extends Component {
     this.mapNodesToEdges();
   }
 
+  /*
+  - Default config values are overriden by the config values supplied by the developer.
+  */
   mergeUserConfig(userConfig, config) {
     for (const k in userConfig) {
       config[k] = userConfig[k];
@@ -62,8 +63,6 @@ export class Graphik extends Component {
   }
 
   saveGraph() {
-    console.log('Saving Graph');
-    console.log(this.state.edges);
     const formattedData = this.generatedFormattedSavedData();
     this.props.externalSaveGraph(formattedData);
   }
@@ -89,6 +88,10 @@ export class Graphik extends Component {
     return data;
   }
 
+  /*
+  - Maps Node objects to each edge using mapNodesToEdge(edge) function below.
+  - edge.attributes is also set to an empty object {} in case an edge has no attributes.
+  */
   mapNodesToEdges() {
     this.props.data.edges.forEach(edge => {
       this.mapNodesToEdge(edge);
@@ -96,10 +99,18 @@ export class Graphik extends Component {
     });
   }
 
+  /*
+  - Maps Node object to edge.source/edge.target variable based on ID given.
+  - E.g. edge.source = 'Node1' ==> edge.source = {id: Node1, Name: '1', x: 10, y: 10}
+  */
+
   mapNodesToEdge(edge) {
-    const sourceNode = this.state.nodes.filter(node => node.id === (edge.source.id ? edge.source.id : edge.source));
-    const targetNode = this.state.nodes.filter(node => node.id === (edge.target.id ? edge.target.id : edge.target));
-    // Add error handling for if a node is not found
+    const sourceNode = this.state.nodes.filter(node =>
+      node.id === (edge.source.id ? edge.source.id : edge.source)
+    );
+    const targetNode = this.state.nodes.filter(node =>
+      node.id === (edge.target.id ? edge.target.id : edge.target)
+    );
 
     edge.source = sourceNode[0];
     edge.target = targetNode[0];
@@ -132,16 +143,16 @@ export class Graphik extends Component {
     this.setState({ showAddNodeModal: false });
   }
 
+  /*
+  - Adding a new node requires an id, name, and xy positions
+  - Once the new node is added, the change in state of the 'nodes' variable will cause the graph to rerender.
+   */
   addNewNode(id, name, x, y) {
-    const newNode = {
-      id,
-      name,
-      x,
-      y
-    };
-    // console.log(newNode);
+    const newNode = { id, name, x, y };
     const tempNodes = this.state.nodes;
+
     tempNodes.push(newNode);
+
     this.setState({
       nodes: tempNodes
     });
@@ -175,15 +186,20 @@ export class Graphik extends Component {
   }
 
   render() {
-    console.log('GRAPHIX Rerender');
-    console.log(this.state);
     return (
       <div id='svgContainer' className={styles.svgContainer}>
-        <Button size='sm' onClick={this.saveGraph} variant='info' style={{ position: 'absolute', margin: '2%' }}>
+        <Button
+          size='sm'
+          onClick={this.saveGraph /* Links to the function passed in by the user for what to do when the save button is clicked */}
+          variant='info'
+          style={{ position: 'absolute', margin: '2%' }}
+        >
           Save
         </Button>
-        {/* Using key here is to remount every time, but this could be made better... */}
-        <Graph key={Date.now()} {...this.state} />
+        <Graph
+          key={Date.now() /* Key here is required so React re-renders the Graph everytime a change is made */}
+          {...this.state /* List of attributes that have + sign next to them on the class diagram */}
+        />
         <AddNodeModal
           show={this.state.showAddNodeModal}
           handleClose={this.handleModalClose}
