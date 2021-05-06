@@ -3,7 +3,7 @@ import Graph from './d3-tools/Graph';
 import styles from './styles.module.css';
 import Button from 'react-bootstrap/Button';
 import AddNodeModal from './d3-tools/AddNodeModal';
-
+import _ from 'lodash';
 // Add a save button.
 
 const config = {
@@ -38,8 +38,8 @@ export class Graphix extends Component {
     this.mergeUserConfig(this.props.userConfig ? this.props.userConfig : {}, config);
 
     this.state = {
-      nodes: props.data.nodes,
-      edges: props.data.edges,
+      nodes: _.cloneDeep(props.data.nodes),
+      edges: _.cloneDeep(props.data.edges),
       removeNode: this.removeNode,
       addNode: this.handleAddNodeClick,
       addNewEdge: this.addNewEdge,
@@ -93,7 +93,7 @@ export class Graphix extends Component {
   - edge.attributes is also set to an empty object {} in case an edge has no attributes.
   */
   mapNodesToEdges() {
-    this.props.data.edges.forEach(edge => {
+    this.state.edges.forEach(edge => {
       this.mapNodesToEdge(edge);
       edge.attributes = edge.attributes ? edge.attributes : {};
     });
@@ -116,7 +116,7 @@ export class Graphix extends Component {
     edge.target = targetNode[0];
   }
 
-  removeNode(d, e) {
+  removeNode(d) {
     const tempNodes = this.state.nodes.filter(node => {
       return node.id !== d.id;
     });
@@ -128,7 +128,7 @@ export class Graphix extends Component {
       nodes: tempNodes,
       edges: tempEdges
     });
-    this.forceUpdate();
+    this.callRerender();
   }
 
   handleAddNodeClick(d, e) {

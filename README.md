@@ -6,6 +6,8 @@ Then using 2 separate terminals, run `npm run start` in both root directory and 
 
 Demo will be visible on url http://localhost:3000/
 
+The exmaple demo should take you through the functionality of Graphix
+
 # Integrating into your library
 
 ## Install
